@@ -1,35 +1,186 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudySphere</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StudySphere</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* full-viewport background image (fixed for subtle parallax) */
+    .bg-image {
+      position: fixed;
+      inset: 0;
+      background-image: url('bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      z-index: 0;
+      will-change: transform;
+      transform: none;
+    }
+
+    /* black overlay that fades-in as you scroll */
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      opacity: 0;
+      transition: opacity 200ms linear;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* content sits above the background */
+    .cover-container {
+      position: relative;
+      z-index: 2;
+      /* keep min height as before */
+      min-height: 100vh;
+      background: transparent;
+    }
+
+    /* make sure header + main are visible above overlay */
+    header, main { position: relative; z-index: 3; }
+
+    /* small visual tweak so text remains readable on image */
+    body[data-bs-theme="dark"] .nav-link { text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
+
+    /* optional: a little parallax move for the image (subtle) */
+    .bg-image.parallax {
+        transform-origin: center;
+    }
+
+    header, main, .cover-hero, .cover-container, .container {
+        position: relative; /* z-index only works when positioned */
+        z-index: 10;        /* higher than bg/z-overlay */
+    }
+
+    /* Responsive tweak so overlay transitions smooth on small screens */
+    @media (prefers-reduced-motion: reduce) {
+      .bg-overlay { transition: none; }
+      .bg-image { transition: none; }
+    }
+  </style>
 </head>
-<body data-bs-theme="dark">
-    <header class="p-3"> 
-        <div class="container"> 
-            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"> 
-                <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none"> 
-                    <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg> 
-                </a> 
-                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"> 
-                    <li><a href="#" class="nav-link px-2 text-secondary">Home</a></li> 
-                    <li><a href="#" class="nav-link px-2 text-white">Features</a></li> 
-                    <li><a href="#" class="nav-link px-2 text-white">Pricing</a></li> 
-                    <li><a href="#" class="nav-link px-2 text-white">FAQs</a></li> 
-                    <li><a href="#" class="nav-link px-2 text-white">About</a></li> 
-                </ul> 
-                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search"> 
-                    <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Search..." aria-label="Search"> 
-                </form> 
-                <div class="text-end"> 
-                    <button type="button" class="btn btn-outline-light me-2">Login</button> 
-                    <button type="button" class="btn btn-warning">Sign-up</button> 
+<body class="d-flex flex-column min-vh-100" data-bs-theme="dark">
+
+  <!-- Background layers (fixed, behind everything) -->
+  <div class="bg-image" id="bgImage"></div>
+  <div class="bg-overlay" id="bgOverlay"></div>
+
+  <header class="p-3">
+      <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+          <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+            <svg class="bi me-2" width="40" height="32" role="img" aria-label="Logo"></svg>
+          </a>
+          <ul class="nav nav-pills col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            <li><a href="#" class="nav-link px-3 text-warning">Home</a></li>
+            <li><a href="#" class="nav-link px-3 text-white">Leaderboard</a></li>
+            <li><a href="#" class="nav-link px-3 text-white">Practice</a></li>
+            <li><a href="#" class="nav-link px-3 text-white">Rank</a></li>
+            <li><a href="#" class="nav-link px-3 text-white">About</a></li>
+          </ul>
+          <div class="text-end">
+            <button type="button" class="btn btn-outline-light me-2">Login</button>
+            <button type="button" class="btn btn-warning">Sign-up</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+  <!-- cover-container fills viewport (min-vh-100) and is a column flexbox -->
+  <div class="cover-container d-flex w-100 min-vh-100 p-3 mx-auto flex-column">
+    <!-- main area: my-auto centers it vertically inside the column -->
+    <main class="px-3 my-auto text-center">
+      <h1 class="display-3">Welcome to <span class="text-warning">StudySphere</span>,</h1>
+      <p class="lead"><span class="text-warning">Read</span> More. <span class="text-warning">Learn</span> More. <span class="text-warning">Be</span> More.</p>
+      <p class="lead py-3">
+        <a href="#" class="btn btn-lg btn-outline-warning">Join Us</a>
+      </p>
+    </main>
+  </div>
+  <div class="container px-4 py-5" id="hanging-icons"> 
+        <h2 class="pb-2 border-bottom">Something</h2> 
+        <div class="row g-4 py-5 row-cols-1 row-cols-lg-3"> 
+            <div class="col d-flex align-items-start"> 
+                <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3"> 
+                    <svg class="bi" width="1em" height="1em" aria-hidden="true"><use xlink:href="#toggles2"></use></svg> 
+                </div> 
+                <div> 
+                    <h3 class="fs-2 text-body-emphasis">Featured title</h3> 
+                    <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p> 
+                    <a href="#" class="btn btn-primary">Primary button</a> 
+                </div> 
+            </div> 
+            <div class="col d-flex align-items-start"> 
+                <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3"> 
+                    <svg class="bi" width="1em" height="1em" aria-hidden="true"><use xlink:href="#cpu-fill"></use></svg> 
+                </div> 
+                <div> 
+                    <h3 class="fs-2 text-body-emphasis">Featured title</h3> 
+                    <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p> 
+                    <a href="#" class="btn btn-primary">Primary button</a> 
+                </div> 
+            </div> 
+            <div class="col d-flex align-items-start"> 
+                <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3"> 
+                    <svg class="bi" width="1em" height="1em" aria-hidden="true"><use xlink:href="#tools"></use></svg> 
+                </div> 
+                <div> 
+                    <h3 class="fs-2 text-body-emphasis">Featured title</h3> 
+                    <p>Paragraph of text beneath the heading to explain the heading. We'll add onto it with another sentence and probably just keep going until we run out of words.</p> 
+                    <a href="#" class="btn btn-primary">Primary button</a> 
                 </div> 
             </div> 
         </div> 
-    </header>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+    </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    (function() {
+      const overlay = document.getElementById('bgOverlay');
+      const bg = document.getElementById('bgImage');
+
+      // how much scroll distance (px) to reach full black
+      // change this to make fade faster/slower (e.g. 400 = faster, 1200 = slower)
+      let fadeDistance = window.innerHeight * 0.9;
+
+      function updateFadeDistance() {
+        fadeDistance = window.innerHeight * 0.9;
+      }
+
+      // throttle using requestAnimationFrame for smoothness
+      let ticking = false;
+      function onScroll() {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            const scrollY = window.scrollY || window.pageYOffset;
+            // compute progress [0..1]
+            let progress = Math.min(Math.max(scrollY / fadeDistance, 0), 1);
+            // set overlay opacity
+            overlay.style.opacity = progress.toFixed(3);
+
+            // small optional parallax transform for background image
+            const parallax = Math.min(progress * 30, 30); // up to 30px shift
+            bg.style.transform = `translateY(${parallax}px)`;
+
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', () => {
+        updateFadeDistance();
+        onScroll(); // recalc on resize
+      });
+
+      // initial call (if page isn't at top)
+      onScroll();
+    })();
+  </script>
 </body>
 </html>
