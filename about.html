@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StudySphere</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* ensure consistent card sizing and spacing */
+    .carousel-card { min-width: 18rem; max-width: 18rem; }
+    /* on very small screens allow cards to shrink to container width */
+    @media (max-width: 575.98px) {
+      .carousel-card { min-width: 100%; max-width: 100%; }
+    }
+    /* center content inside carousel-items */
+    .carousel-item .cards-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: nowrap;
+    }
+    /* allow wrapping on very small screens */
+    @media (max-width: 767.98px) {
+      .carousel-item .cards-row { flex-wrap: nowrap; overflow: hidden; }
+    }
+  </style>
+</head>
+<body class="d-flex flex-column min-vh-100" data-bs-theme="dark">
+  <header class="p-3 sticky-top bg-dark shadow-sm">
+      <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+          <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+            <svg class="bi me-2" width="40" height="32" role="img" aria-label="Logo"></svg>
+          </a>
+          <ul class="nav nav-pills col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            <li><a href="/" class="nav-link px-3 text-white">Home</a></li>
+            <li><a href="/leaderboard.html" class="nav-link px-3 text-white">Leaderboard</a></li>
+            <li><a href="/practice.html" class="nav-link px-3 text-white">Practice</a></li>
+            <li><a href="/rank.html" class="nav-link px-3 text-white">Rank</a></li>
+            <li><a href="/about.html" class="nav-link px-3 text-warning">About</a></li>
+          </ul>
+          <div class="text-end">
+            <button type="button" class="btn btn-outline-light me-2">Login</button>
+            <button type="button" class="btn btn-warning">Sign-up</button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="container col-xxl-8 px-4 py-5"> 
+        <div class="row flex-lg-row-reverse align-items-center g-5 py-5"> 
+            <!-- Bootstrap carousel -->
+        <div id="cardsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500">
+          <div class="carousel-indicators">
+            <button type="button" data-bs-target="#cardsCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#cardsCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+          </div>
+
+          <div class="carousel-inner">
+
+            <!-- Slide 1: card 1 + card 2 (will show side-by-side on md+) -->
+            <div class="carousel-item active">
+              <div class="cards-row">
+                <div class="card carousel-card">
+                  <img src="https://via.placeholder.com/288x162?text=Thimphu" class="card-img-top" alt="Thimphu">
+                  <div class="card-body">
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+                  </div>
+                </div>
+
+                <div class="card carousel-card">
+                  <img src="https://via.placeholder.com/288x162?text=Meetang" class="card-img-top" alt="Meetang">
+                  <div class="card-body">
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 2: card 3 + card 4 -->
+            <div class="carousel-item">
+              <div class="cards-row">
+                <div class="card carousel-card">
+                  <img src="https://via.placeholder.com/288x162?text=SkyWarath" class="card-img-top" alt="SkyWarath">
+                  <div class="card-body">
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+                  </div>
+                </div>
+
+                <div class="card carousel-card">
+                  <img src="https://via.placeholder.com/288x162?text=Porsche" class="card-img-top" alt="Porsche">
+                  <div class="card-body">
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- controls -->
+          <button class="carousel-control-prev" type="button" data-bs-target="#cardsCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#cardsCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+        <!-- /carousel -->
+
+      </div>
+    </div>
+            <div class="col-lg-6"> 
+                <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">About</h1> 
+                <p class="lead">StudySphere is a global platform that brings students together to compete, collaborate, and celebrate the joy of reading, inspiring a lifelong passion for learning.</p> 
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start"> 
+                    <button type="button" class="btn btn-warning btn-lg px-4 me-md-2">Get Started</button> 
+                    <button type="button" class="btn btn-outline-secondary btn-lg px-4">Home</button> 
+                </div> 
+            </div> 
+        </div> 
+    </div>
+  
+  <div class="container"> 
+    <footer class="py-3 my-4"> 
+      <ul class="nav justify-content-center border-bottom pb-3 mb-3"> 
+        <li class="nav-item"><a href="/" class="nav-link px-2 text-body-secondary">Home</a></li> 
+        <li class="nav-item"><a href="/leaderboard.html" class="nav-link px-2 text-body-secondary">Leaderboard</a></li> 
+        <li class="nav-item"><a href="/practice.html" class="nav-link px-2 text-body-secondary">Practice</a></li> 
+        <li class="nav-item"><a href="/rank.html" class="nav-link px-2 text-body-secondary">Rank</a></li> 
+        <li class="nav-item"><a href="/about.html" class="nav-link px-2 text-body-secondary">About</a></li> 
+      </ul> 
+      <p class="text-center text-body-secondary">© 2025 StudySphere</p> 
+    </footer> 
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
