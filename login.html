@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StudySphere</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-control:focus {
+            border-color: #ffc107 !important;
+            box-shadow: 0 0 0 0.2rem rgba(255,193,7,.25) !important;
+        }
+        body {
+            background-image: url('login_bg.png');
+            background-size: cover;
+            background-position: bottom;
+            background-repeat: no-repeat;
+        }
+        /* Custom warning color for checked checkbox */
+        .form-check-input:checked {
+            background-color: #ffc107 !important;
+            border-color: #ffc107 !important;
+            box-shadow: 0 0 0 0.2rem rgba(255,193,7,.25) !important;
+        }
+        /* Always use warning color for focus ring on checkbox */
+        .form-check-input:focus, .form-check-input:focus-visible {
+            border-color: #ffc107 !important;
+            box-shadow: 0 0 0 0.2rem rgba(255,193,7,.25) !important;
+        }
+    </style>
+</head>
+<body class="d-flex align-items-center justify-content-center min-vh-100 py-4" data-bs-theme="dark">
+    <main class="w-100 m-auto" style="max-width: 350px;">
+        <div class="card shadow rounded-4">
+            <div class="card-body p-4">
+                <form>
+                    <h1 class="h2 mb-3 fw-normal text-center p-1">Welcome back!</h1>
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                        <label for="floatingInput">Email address</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                        <label for="floatingPassword">Password</label>
+                    </div>
+                    <div class="form-check text-start my-3">
+                        <input class="form-check-input" type="checkbox" value="remember-me" id="checkDefault">
+                        <label class="form-check-label" for="checkDefault">Remember me</label>
+                    </div>
+                    <button class="btn btn-warning w-100 py-2" type="submit">Sign in</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</script>
+<script>
+    // Add warning color to checkbox when checked (for browsers that don't support :checked styling)
+    document.addEventListener('DOMContentLoaded', function() {
+        const cb = document.getElementById('checkDefault');
+        if (cb) {
+            cb.addEventListener('change', function() {
+                if (cb.checked) {
+                    cb.classList.add('bg-warning', 'border-warning');
+                } else {
+                    cb.classList.remove('bg-warning', 'border-warning');
+                }
+            });
+            // Initial state
+            if (cb.checked) {
+                cb.classList.add('bg-warning', 'border-warning');
+            }
+        }
+    });
+</script>
+</script>
+<!-- Supabase JS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+    // Replace with your Supabase project URL and anon key
+    const SUPABASE_URL = 'https://mtrdbguzixngcvzcxwlz.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10cmRiZ3V6aXhuZ2N2emN4d2x6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxMzY1NTIsImV4cCI6MjA3MjcxMjU1Mn0.Bcedj4oZbqY0sWzTXULtPeiPlNDdy2RnVef_u68tHVU';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    document.querySelector('form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('floatingInput').value;
+        const password = document.getElementById('floatingPassword').value;
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) {
+            alert(error.message);
+        } else {
+            alert('Login successful!');
+            window.location.href = '/'; // Redirect if needed
+        }
+    });
+</script>
+</body>
+</html>

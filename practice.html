@@ -1,47 +1,596 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>StudySphere</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>StudySphere</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="d-flex flex-column min-vh-100" data-bs-theme="dark">
-  <header class="p-3 sticky-top bg-dark shadow-sm">
-      <div class="container">
-        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-          <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-            <svg class="bi me-2" width="40" height="32" role="img" aria-label="Logo"></svg>
-          </a>
-          <ul class="nav nav-pills col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-            <li><a href="/" class="nav-link px-3 text-white">Home</a></li>
-            <li><a href="/leaderboard.html" class="nav-link px-3 text-white">Leaderboard</a></li>
-            <li><a href="/practice.html" class="nav-link px-3 text-warning">Practice</a></li>
-            <li><a href="/rank.html" class="nav-link px-3 text-white">Rank</a></li>
-            <li><a href="/about.html" class="nav-link px-3 text-white">About</a></li>
-          </ul>
-          <div class="text-end">
-            <button type="button" class="btn btn-outline-light me-2">Login</button>
-            <button type="button" class="btn btn-warning">Sign-up</button>
-          </div>
-        </div>
-      </div>
-    </header>
-    
-  
-  <div class="container"> 
-    <footer class="py-3 my-4"> 
-      <ul class="nav justify-content-center border-bottom pb-3 mb-3"> 
-        <li class="nav-item"><a href="/" class="nav-link px-2 text-body-secondary">Home</a></li> 
-        <li class="nav-item"><a href="/leaderboard.html" class="nav-link px-2 text-body-secondary">Leaderboard</a></li> 
-        <li class="nav-item"><a href="/practice.html" class="nav-link px-2 text-body-secondary">Practice</a></li> 
-        <li class="nav-item"><a href="/rank.html" class="nav-link px-2 text-body-secondary">Rank</a></li> 
-        <li class="nav-item"><a href="/about.html" class="nav-link px-2 text-body-secondary">About</a></li> 
-      </ul> 
-      <p class="text-center text-body-secondary">© 2025 StudySphere</p> 
-    </footer> 
-  </div>
+	<header class="p-3 sticky-top bg-dark shadow-sm">
+		<div class="container">
+			<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+			<a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+				<svg class="bi me-2" width="40" height="32" role="img" aria-label="Logo"></svg>
+			</a>
+			<ul class="nav nav-pills col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+				<li><a href="/" class="nav-link px-3 text-white">Home</a></li>
+				<li><a href="/leaderboard.html" class="nav-link px-3 text-white">Leaderboard</a></li>
+				<li><a href="/practice.html" class="nav-link px-3 text-warning">Practice</a></li>
+				<li><a href="/rank.html" class="nav-link px-3 text-white">Rank</a></li>
+				<li><a href="/about.html" class="nav-link px-3 text-white">About</a></li>
+			</ul>
+			<div class="text-end">
+				<a href="/login.html" type="button" class="btn btn-outline-light me-2">Login</a>
+				<a href="/signup.html" type="button" class="btn btn-warning">Sign-up</a>
+			</div>
+			</div>
+		</div>
+	</header>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+		<div class="container py-4 d-flex flex-column align-items-center justify-content-center" style="min-height: 70vh;">
+			<div id="setupArea" class="mb-4" style="max-width: 400px; width: 100%;">
+				<h4 class="mb-3 text-center">Practice Timer</h4>
+				<form id="timerForm" class="row g-2 align-items-center justify-content-center mb-3">
+					<div class="col-auto">
+						<input type="number" min="1" class="form-control" id="timerInput" placeholder="Minutes (optional)">
+					</div>
+					<div class="col-auto">
+						<button type="submit" class="btn btn-warning" id="startBtn">Start</button>
+						<button type="button" class="btn btn-outline-danger d-none" id="stopBtn">Stop</button>
+						<button type="button" class="btn btn-outline-secondary d-none" id="resetBtn">Reset</button>
+					</div>
+				</form>
+			</div>
+			<div id="sessionArea" class="d-flex justify-content-center align-items-center" style="display:none;">
+				<div class="d-flex align-items-start" style="gap: 8rem;">
+					<!-- Camera recording preview -->
+					<div id="recordIndicator" style="width:220px; min-width:180px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+						<div id="recordBlack" style="width:200px;height:150px;border-radius:1.2em;background:#111;box-shadow:0 0 16px 2px #222;display:flex;align-items:center;justify-content:center;"></div>
+						<video id="recordVideo" width="200" height="150" style="border-radius:1.2em;object-fit:cover;background:#111;box-shadow:0 0 16px 2px #dc3545;display:none;" autoplay muted playsinline></video>
+						<span id="recordStatus" style="display:none;align-items:center;gap:0.7em;margin-top:0.7em;">
+							<span id="recordDot" style="display:inline-block;width:18px;height:18px;border-radius:50%;background:#dc3545;box-shadow:0 0 12px 3px #dc3545;animation:record-blink 1s infinite alternate;"></span>
+							<span class="fw-semibold text-danger">Tracking</span>
+						</span>
+					</div>
+
+					<!-- Timer + controls column -->
+					<div class="d-flex flex-column align-items-center" style="min-width:260px;">
+						<div id="circle-timer" style="width: 260px; height: 260px; position: relative;">
+							<svg width="260" height="260" viewBox="0 0 260 260" style="transform: rotate(-90deg);">
+								<circle cx="130" cy="130" r="110" stroke="#222" stroke-width="18" fill="none"/>
+								<circle id="timerCircle" cx="130" cy="130" r="110" stroke="#ffc107" stroke-width="14" fill="none" stroke-linecap="round" stroke-dasharray="690" stroke-dashoffset="690"/>
+							</svg>
+							<div id="timerDisplay" style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;font-weight:bold;color:#ffc107;text-shadow:0 0 8px #222;user-select:none;">00:00</div>
+						</div>
+
+						<!-- Session controls: Pause/Resume and Reset (under timer) -->
+						<div class="d-flex flex-column align-items-center mt-3" style="width:100%;">
+							<div class="btn-group mx-auto" role="group" aria-label="session controls">
+								<button id="pauseResumeBtn" type="button" class="btn btn-outline-warning">Pause</button>
+								<button id="sessionResetBtn" type="button" class="btn btn-outline-secondary">Reset</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	<style>
+	@keyframes record-blink {
+		0% { opacity: 1; }
+		100% { opacity: 0.4; }
+	}
+	</style>
+		</div>
+
+	<!-- Completion modal -->
+	<div class="modal fade" id="doneModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content bg-dark text-white">
+				<div class="modal-header">
+					<h5 class="modal-title text-warning">Well done!</h5>
+					<!-- <button type="button" class="btn-close btn-close-warning" data-bs-dismiss="modal" aria-label="Close"></button> -->
+				</div>
+				<div class="modal-body">
+					<p class="mb-0">You've earned <span id="xpAmount" class="fw-semibold">0</span> XP!</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-warning" data-bs-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		// Timer logic
+		let timerInterval = null;
+		let mode = null; // 'countdown' or 'countup'
+		let remaining = 0;
+		let elapsed = 0;
+		const timerForm = document.getElementById('timerForm');
+		const timerInput = document.getElementById('timerInput');
+		const timerDisplay = document.getElementById('timerDisplay');
+		const startBtn = document.getElementById('startBtn');
+		const stopBtn = document.getElementById('stopBtn');
+		const resetBtn = document.getElementById('resetBtn');
+		const setupArea = document.getElementById('setupArea');
+		const sessionArea = document.getElementById('sessionArea');
+		const circleEl = document.getElementById('timerCircle');
+		const recordBlack = document.getElementById('recordBlack');
+		const recordStatus = document.getElementById('recordStatus');
+		const doneModalEl = document.getElementById('doneModal');
+		let doneModal = null;
+		const pauseResumeBtn = document.getElementById('pauseResumeBtn');
+		const sessionResetBtn = document.getElementById('sessionResetBtn');
+		let isPaused = false;
+
+		function formatTime(secs) {
+			if (secs >= 3600) {
+				const h = Math.floor(secs / 3600).toString().padStart(2, '0');
+				const m = Math.floor((secs % 3600) / 60).toString().padStart(2, '0');
+				const s = (secs % 60).toString().padStart(2, '0');
+				return `${h}:${m}:${s}`;
+			} else {
+				const m = Math.floor(secs / 60).toString().padStart(2, '0');
+				const s = (secs % 60).toString().padStart(2, '0');
+				return `${m}:${s}`;
+			}
+		}
+
+		// --- Recording indicator logic ---
+		let recordStart = null;
+		let recordInterval = null;
+		let recordStream = null;
+		const recordIndicator = document.getElementById('recordIndicator');
+	// const recordTime = document.getElementById('recordTime');
+		const recordVideo = document.getElementById('recordVideo');
+
+		async function startRecording() {
+			// Show video, hide black screen, show status
+			document.getElementById('recordBlack').style.display = 'none';
+			recordVideo.style.display = 'block';
+			document.getElementById('recordStatus').style.display = 'flex';
+			// Start camera
+			try {
+				if (!recordStream) {
+					recordStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false });
+				}
+				recordVideo.srcObject = recordStream;
+			} catch (err) {
+				document.getElementById('recordBlack').style.display = 'flex';
+				recordVideo.style.display = 'none';
+				document.getElementById('recordStatus').style.display = 'none';
+				alert('Camera access denied or unavailable.');
+			}
+		}
+		function stopRecording() {
+			// Hide video, show black screen, hide status
+			document.getElementById('recordBlack').style.display = 'flex';
+			recordVideo.style.display = 'none';
+			document.getElementById('recordStatus').style.display = 'none';
+			// Stop camera
+			if (recordStream) {
+				const tracks = recordStream.getTracks();
+				tracks.forEach(track => track.stop());
+				recordStream = null;
+				recordVideo.srcObject = null;
+			}
+		}
+
+			function updateDisplay() {
+				// Animate circle progress
+				const circle = document.getElementById('timerCircle');
+				let percent = 0;
+				if (mode === 'countdown') {
+					timerDisplay.textContent = formatTime(remaining);
+					if (timerInput.value && !isNaN(parseInt(timerInput.value))) {
+						const total = parseInt(timerInput.value) * 60;
+						percent = total > 0 ? (remaining / total) : 0;
+					}
+				} else if (mode === 'countup') {
+					timerDisplay.textContent = formatTime(elapsed);
+					// For countup, fill up to 1 hour, then full
+					percent = Math.min(elapsed / 3600, 1);
+				} else {
+					timerDisplay.textContent = '00:00';
+					percent = 0;
+				}
+				if (circle) {
+					const r = parseFloat(circle.getAttribute('r')) || 110;
+					const dash = 2 * Math.PI * r;
+					circle.setAttribute('stroke-dasharray', dash);
+					circle.setAttribute('stroke-dashoffset', Math.max(0, dash - dash * percent));
+				}
+			}
+
+			function startTimer() {
+				if (timerInterval) clearInterval(timerInterval);
+				// Hide setup, show session and enlarge preview
+				setupArea.style.display = 'none';
+				sessionArea.style.display = 'flex';
+				recordBlack.style.width = '420px';
+				recordBlack.style.height = '315px';
+				recordBlack.style.borderRadius = '1.5em';
+				recordVideo.style.width = '420px';
+				recordVideo.style.height = '315px';
+				// increase gap to give more space between camera and timer
+				const sessionRow = document.querySelector('#sessionArea .d-flex.align-items-start');
+				if (sessionRow) sessionRow.style.gap = '8rem';
+				// enlarge the svg responsively so it never overlaps the camera
+				const circleSvg = document.querySelector('#circle-timer svg');
+				const recordBox = document.getElementById('recordIndicator');
+				if (circleSvg && recordBox) {
+					// compute available width: container width - record box width - margins
+					const containerWidth = document.querySelector('#sessionArea').clientWidth || window.innerWidth;
+					const recordW = recordBox.offsetWidth || 220;
+					const available = Math.max(260, containerWidth - recordW - 120); // leave padding
+					const target = Math.min(380, available);
+					// apply sizes
+					circleSvg.setAttribute('width', String(target));
+					circleSvg.setAttribute('height', String(target));
+					circleSvg.setAttribute('viewBox', '0 0 260 260');
+					circleSvg.style.transform = 'rotate(-90deg)';
+					circleSvg.style.transformOrigin = '50% 50%';
+					circleSvg.style.display = 'block';
+					circleSvg.style.margin = '0 auto';
+					document.getElementById('circle-timer').style.width = target + 'px';
+					document.getElementById('circle-timer').style.height = target + 'px';
+				}
+				startRecording();
+				timerInput.disabled = true;
+			// show recording preview, circle and session controls
+			document.getElementById('recordIndicator').style.display = 'flex';
+			document.getElementById('circle-timer').style.display = 'block';
+			if (pauseResumeBtn) pauseResumeBtn.style.display = 'inline-block';
+			if (sessionResetBtn) sessionResetBtn.style.display = 'inline-block';
+				if (mode === 'countdown') {
+					timerInterval = setInterval(() => {
+						if (remaining > 0) {
+							remaining--;
+							updateDisplay();
+						} else {
+							clearInterval(timerInterval);
+							timerInterval = null;
+							updateDisplay();
+							startBtn.classList.remove('d-none');
+							stopBtn.classList.add('d-none');
+							resetBtn.classList.remove('d-none');
+							timerDisplay.textContent = '00:00';
+							// Fill circle
+							const circle = document.getElementById('timerCircle');
+							if (circle) circle.setAttribute('stroke-dashoffset', 0);
+							timerInput.disabled = false;
+										stopRecording();
+										// compute earned XP and show in modal, then persist to Supabase
+										const mins = (parseInt(timerInput.value, 10) > 0) ? parseInt(timerInput.value, 10) : Math.round(elapsed / 60);
+										const earned = calculateXp(mins);
+										const xpSpan = document.getElementById('xpAmount');
+										if (xpSpan) xpSpan.textContent = String(earned);
+										// show completion modal
+										if (!doneModal) {
+											doneModal = new bootstrap.Modal(doneModalEl);
+										}
+										doneModal.show();
+										// try to persist XP for current user (if Supabase client exists)
+										addXpToUser(earned).then(() => {
+											// refresh UI to show updated XP badge
+											if (typeof updateUserUI === 'function') updateUserUI();
+										}).catch(err => {
+											console.error('Failed to add XP:', err);
+										});
+						}
+					}, 1000);
+				} else if (mode === 'countup') {
+					timerInterval = setInterval(() => {
+						elapsed++;
+						updateDisplay();
+					}, 1000);
+				}
+			}
+
+			function stopTimer() {
+				if (timerInterval) clearInterval(timerInterval);
+				timerInterval = null;
+				timerInput.disabled = false;
+				stopRecording();
+				// keep session visible so user can resume or reset (keep sizes already set on start)
+			}
+
+			function pauseTimer() {
+				if (timerInterval) {
+					clearInterval(timerInterval);
+					timerInterval = null;
+					isPaused = true;
+					pauseResumeBtn.textContent = 'Resume';
+				}
+			}
+
+			function resumeTimer() {
+				if (!timerInterval) {
+					isPaused = false;
+					pauseResumeBtn.textContent = 'Pause';
+					if (mode === 'countdown') {
+						timerInterval = setInterval(() => {
+							if (remaining > 0) {
+								remaining--;
+								updateDisplay();
+							} else {
+								clearInterval(timerInterval);
+								timerInterval = null;
+								updateDisplay();
+								startBtn.classList.remove('d-none');
+								stopBtn.classList.add('d-none');
+								resetBtn.classList.remove('d-none');
+								timerDisplay.classList.add('text-success');
+								timerDisplay.textContent = 'Time\'s up!';
+								const circle = document.getElementById('timerCircle');
+								if (circle) circle.setAttribute('stroke-dashoffset', 0);
+								timerInput.disabled = false;
+								stopRecording();
+								// compute earned XP and show in modal, then persist to Supabase
+								const mins = (parseInt(timerInput.value, 10) > 0) ? parseInt(timerInput.value, 10) : Math.round(elapsed / 60);
+								const earned = calculateXp(mins);
+								const xpSpan = document.getElementById('xpAmount');
+								if (xpSpan) xpSpan.textContent = String(earned);
+								if (!doneModal) doneModal = new bootstrap.Modal(doneModalEl);
+								doneModal.show();
+								addXpToUser(earned).then(() => {
+									if (typeof updateUserUI === 'function') updateUserUI();
+								}).catch(err => console.error('Failed to add XP:', err));
+							}
+						}, 1000);
+					} else if (mode === 'countup') {
+						timerInterval = setInterval(() => {
+							elapsed++;
+							updateDisplay();
+						}, 1000);
+					}
+				}
+			}
+
+			function resetTimer() {
+				stopTimer();
+				mode = null;
+				remaining = 0;
+				elapsed = 0;
+				timerInput.value = '';
+				updateDisplay();
+				// hide session, show setup
+				sessionArea.style.display = 'none';
+				setupArea.style.display = 'block';
+				// hide session UI elements
+				document.getElementById('recordIndicator').style.display = 'none';
+				document.getElementById('circle-timer').style.display = 'none';
+				if (pauseResumeBtn) pauseResumeBtn.style.display = 'none';
+				if (sessionResetBtn) sessionResetBtn.style.display = 'none';
+				// restore sizes
+				recordBlack.style.width = '200px';
+				recordBlack.style.height = '150px';
+				recordVideo.style.width = '200px';
+				recordVideo.style.height = '150px';
+				const circleSvgReset = document.querySelector('#circle-timer svg');
+				if (circleSvgReset) {
+					circleSvgReset.setAttribute('width', '260');
+					circleSvgReset.setAttribute('height', '260');
+					circleSvgReset.style.transform = 'rotate(-90deg)';
+					circleSvgReset.style.transformOrigin = '50% 50%';
+					document.getElementById('circle-timer').style.width = '260px';
+					document.getElementById('circle-timer').style.height = '260px';
+				}
+				startBtn.classList.remove('d-none');
+				stopBtn.classList.add('d-none');
+				resetBtn.classList.add('d-none');
+				timerDisplay.classList.remove('text-success');
+				timerInput.disabled = false;
+				stopRecording();
+			}
+
+		timerForm.addEventListener('submit', function(e) {
+			e.preventDefault();
+			const mins = parseInt(timerInput.value, 10);
+			if (!isNaN(mins) && mins > 0) {
+				// Countdown mode
+				mode = 'countdown';
+				remaining = mins * 60;
+				updateDisplay();
+			} else {
+				// Countup mode
+				mode = 'countup';
+				elapsed = 0;
+				updateDisplay();
+			}
+			startBtn.classList.add('d-none');
+			stopBtn.classList.remove('d-none');
+			resetBtn.classList.remove('d-none');
+			timerDisplay.classList.remove('text-success');
+			startTimer();
+		});
+
+		stopBtn.addEventListener('click', function() {
+			stopTimer();
+			startBtn.classList.remove('d-none');
+			stopBtn.classList.add('d-none');
+		});
+
+		pauseResumeBtn.addEventListener('click', function() {
+			if (isPaused) {
+				resumeTimer();
+			} else {
+				pauseTimer();
+			}
+		});
+
+		sessionResetBtn.addEventListener('click', function() {
+			resetTimer();
+		});
+
+		resetBtn.addEventListener('click', function() {
+			resetTimer();
+		});
+
+		// Initialize
+		// compute initial dash for circle
+		(function initCircle(){
+			const r = parseFloat(circleEl.getAttribute('r')) || 110;
+			const dash = 2 * Math.PI * r;
+			circleEl.setAttribute('stroke-dasharray', dash);
+			circleEl.setAttribute('stroke-dashoffset', dash);
+		})();
+		updateDisplay();
+		resetBtn.classList.add('d-none');
+		stopBtn.classList.add('d-none');
+		// Show black screen, hide video and status on load
+		document.getElementById('recordBlack').style.display = 'flex';
+		recordVideo.style.display = 'none';
+		document.getElementById('recordStatus').style.display = 'none';
+		// Hide session UI elements initially
+		document.getElementById('recordIndicator').style.display = 'none';
+		document.getElementById('circle-timer').style.display = 'none';
+		if (pauseResumeBtn) pauseResumeBtn.style.display = 'none';
+		if (sessionResetBtn) sessionResetBtn.style.display = 'none';
+	</script>
+	
+
+	<div class="container"> 
+		<footer class="py-3 my-4"> 
+		<ul class="nav justify-content-center border-bottom pb-3 mb-3"> 
+			<li class="nav-item"><a href="/" class="nav-link px-2 text-body-secondary">Home</a></li> 
+			<li class="nav-item"><a href="/leaderboard.html" class="nav-link px-2 text-body-secondary">Leaderboard</a></li> 
+			<li class="nav-item"><a href="/practice.html" class="nav-link px-2 text-body-secondary">Practice</a></li> 
+			<li class="nav-item"><a href="/rank.html" class="nav-link px-2 text-body-secondary">Rank</a></li> 
+			<li class="nav-item"><a href="/about.html" class="nav-link px-2 text-body-secondary">About</a></li> 
+		</ul> 
+		<p class="text-center text-body-secondary">© 2025 StudySphere</p> 
+		</footer> 
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- Supabase JS CDN -->
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+	<script>
+		// Replace with your Supabase project URL and anon key
+		const SUPABASE_URL = 'https://mtrdbguzixngcvzcxwlz.supabase.co';
+		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10cmRiZ3V6aXhuZ2N2emN4d2x6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxMzY1NTIsImV4cCI6MjA3MjcxMjU1Mn0.Bcedj4oZbqY0sWzTXULtPeiPlNDdy2RnVef_u68tHVU';
+		const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+		// Helper: get user from localStorage/session
+		async function getUser() {
+			// Try to get from localStorage (persisted session)
+			let user = null;
+			try {
+				const session = JSON.parse(localStorage.getItem('sb-session'));
+				if (session && session.user) user = session.user;
+			} catch {}
+			// If not found, try Supabase
+			if (!user) {
+				const { data } = await sb.auth.getUser();
+				user = data && data.user;
+			}
+			return user;
+		}
+
+		// On login/signup, save session to localStorage
+		sb.auth.onAuthStateChange((event, session) => {
+			if (session) {
+				localStorage.setItem('sb-session', JSON.stringify(session));
+			} else {
+				localStorage.removeItem('sb-session');
+			}
+			updateUserUI();
+		});
+
+		// Fetch XP from Supabase 'profiles' table
+		async function getUserXP(userId) {
+			if (!userId) return null;
+			// Assumes a 'profiles' table with 'id' (uuid, matches user.id) and 'xp' (integer)
+			const { data, error } = await sb.from('profiles').select('xp').eq('id', userId).single();
+			if (error) return null;
+			return data?.xp ?? 0;
+		}
+
+		// Calculate XP earned from minutes: minutes ^ 1.5, rounded to integer
+		function calculateXp(minutes) {
+			const m = Number(minutes) || 0;
+			const xp = Math.pow(m, 1.5);
+			return Math.max(0, Math.round(xp));
+		}
+
+		// Add XP to current user's profiles.xp (id matches user.id)
+		async function addXpToUser(xpToAdd) {
+			try {
+				if (!xpToAdd || xpToAdd <= 0) return;
+				const user = await getUser();
+				if (!user) {
+					console.warn('No user logged in; skipping XP update.');
+					return;
+				}
+				// Use Supabase to increment xp in profiles table. We fetch current xp then update.
+				const { data: profile, error: fetchErr } = await sb.from('profiles').select('xp').eq('id', user.id).single();
+				if (fetchErr) {
+					console.error('Error fetching profile for XP update:', fetchErr);
+					// Try upsert fallback: insert with xp value
+					const { error: upsertErr } = await sb.from('profiles').upsert({ id: user.id, xp: xpToAdd });
+					if (upsertErr) throw upsertErr;
+					return;
+				}
+				const current = (profile && typeof profile.xp === 'number') ? profile.xp : 0;
+				const newXp = current + xpToAdd;
+				const { error: updateErr } = await sb.from('profiles').update({ xp: newXp }).eq('id', user.id);
+				if (updateErr) throw updateErr;
+				return;
+			} catch (err) {
+				console.error('addXpToUser error:', err);
+				throw err;
+			}
+		}
+
+		// Update UI: replace login/signup with user info if logged in
+		async function updateUserUI() {
+			const user = await getUser();
+			const userDiv = document.querySelector('.text-end');
+			if (!userDiv) return;
+			if (user) {
+				// Get name and avatar (fallback to email/initial)
+				const name = user.user_metadata?.name || user.email || 'User';
+				const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ffc107&color=222&bold=true`;
+				// Fetch XP from Supabase
+				let xp = await getUserXP(user.id);
+				if (xp === null) xp = 0;
+				userDiv.innerHTML = `
+					<span class="badge rounded-pill bg-warning text-dark me-3 align-middle" style="font-size:1rem;vertical-align:middle;">${xp} XP</span>
+					<div class="dropdown d-inline-block align-middle">
+						<a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+							<img src="${avatar}" alt="avatar" width="32" height="32" class="rounded-circle me-2 border border-warning">
+							<span class="fw-semibold">${name}</span>
+						</a>
+						<ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="userDropdown">
+							<li><a class="dropdown-item" href="#">Profile</a></li>
+							<li><hr class="dropdown-divider"></li>
+							<li><a class="dropdown-item" href="#" id="logoutBtn">Log out</a></li>
+						</ul>
+					</div>
+				`;
+				// Add logout handler
+				setTimeout(() => {
+					const logoutBtn = document.getElementById('logoutBtn');
+					if (logoutBtn) {
+						logoutBtn.onclick = async function(e) {
+							e.preventDefault();
+							await sb.auth.signOut();
+							localStorage.removeItem('sb-session');
+							window.location.reload();
+						};
+					}
+				}, 0);
+			} else {
+				// Not logged in: show login/signup
+				userDiv.innerHTML = `
+					<a href="/login.html" type="button" class="btn btn-outline-light me-2">Login</a>
+					<a href="/signup.html" type="button" class="btn btn-warning">Sign-up</a>
+				`;
+			}
+		}
+
+		// On page load
+		updateUserUI();
+	</script>
 </body>
 </html>

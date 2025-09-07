@@ -6,6 +6,64 @@
   <title>StudySphere</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
+    .neon-white {
+      text-shadow:
+        0 0 5px #a0a0a0,
+        0 0 10px #a0a0a0,
+        0 0 20px #a0a0a0,
+        0 0 40px #a0a0a0,
+        0 0 80px #a0a0a0;
+      color: #fff;
+    }
+    /* Flicker animation for text */
+    .flicker {
+      animation: flicker 0.5s linear;
+      color: #fff;
+    }
+    .neon-gold {
+      text-shadow:
+        0 0 5px #ffd700,
+        0 0 10px #ffd700,
+        0 0 20px #ffd700,
+        0 0 40px #ffd700,
+        0 0 80px #ffd700;
+      color: #fff8dc;
+    }
+    .neon-red {
+      text-shadow:
+        0 0 5px #ff1744,
+        0 0 10px #ff1744,
+        0 0 20px #ff1744,
+        0 0 40px #ff1744,
+        0 0 80px #ff1744;
+      color: #fff0f0;
+    }
+    .neon-purple {
+      text-shadow:
+        0 0 5px #a020f0,
+        0 0 10px #a020f0,
+        0 0 20px #a020f0,
+        0 0 40px #a020f0,
+        0 0 80px #a020f0;
+      color: #f3e6ff;
+    }
+    .neon-blue {
+      text-shadow:
+        0 0 5px #00bfff,
+        0 0 10px #00bfff,
+        0 0 20px #00bfff,
+        0 0 40px #00bfff,
+        0 0 80px #00bfff;
+      color: #e6f7ff;
+    }
+    @keyframes flicker {
+      0% { opacity: 1; }
+      10% { opacity: 0.3; }
+      20% { opacity: 1; }
+      30% { opacity: 0.3; }
+      40% { opacity: 1; }
+      100% { opacity: 1; }
+    }
     /* ensure consistent card sizing and spacing */
     .carousel-card { min-width: 18rem; max-width: 18rem; }
     /* on very small screens allow cards to shrink to container width */
@@ -24,10 +82,25 @@
     @media (max-width: 767.98px) {
       .carousel-item .cards-row { flex-wrap: nowrap; overflow: hidden; }
     }
+    /* fix carousel glitch by hiding overflow and adding smooth transitions */
+    .carousel-inner {
+      overflow: hidden;
+      position: relative;
+    }
+    .carousel-item {
+      transition: transform 0.6s ease, opacity 0.6s ease;
+      backface-visibility: hidden;
+    }
+    body {
+      background-image: url('bg-star.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
   </style>
 </head>
 <body class="d-flex flex-column min-vh-100" data-bs-theme="dark">
-  <header class="p-3 sticky-top bg-dark shadow-sm">
+  <header class="p-3 sticky-top shadow-sm">
       <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
           <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
@@ -41,87 +114,95 @@
             <li><a href="/about.html" class="nav-link px-3 text-warning">About</a></li>
           </ul>
           <div class="text-end">
-            <button type="button" class="btn btn-outline-light me-2">Login</button>
-            <button type="button" class="btn btn-warning">Sign-up</button>
+            <a href="/login.html" type="button" class="btn btn-outline-light me-2">Login</a>
+            <a href="/signup.html" type="button" class="btn btn-warning">Sign-up</a>
           </div>
         </div>
       </div>
     </header>
-    <div class="container col-xxl-8 px-4 py-5"> 
-        <div class="row flex-lg-row-reverse align-items-center g-5 py-5"> 
-            <!-- Bootstrap carousel -->
-        <div id="cardsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500">
-          <div class="carousel-indicators">
+    <div class="container col-xxl-8 px-4 py-5">
+  <p class="text-center h1 neon-white">Meet our Dev team</p>
+    <div class="row align-items-center g-5 py-5">
+      <div class="col-lg-6 mb-4 mb-lg-0 d-flex justify-content-center">
+        <!-- Bootstrap carousel -->
+        <div id="cardsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500" style="max-width: 400px; width: 100%;">
+          <!-- <div class="carousel-indicators" data-bs-theme="light">
             <button type="button" data-bs-target="#cardsCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
             <button type="button" data-bs-target="#cardsCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-          </div>
-
+            <button type="button" data-bs-target="#cardsCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#cardsCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+          </div> -->
           <div class="carousel-inner">
-
-            <!-- Slide 1: card 1 + card 2 (will show side-by-side on md+) -->
-            <div class="carousel-item active">
+            <!-- Slide 1 -->
+            <div class="carousel-item active" data-name="Thimphu" data-quote="CEO and Founder">
               <div class="cards-row">
-                <div class="card carousel-card">
-                  <img src="https://via.placeholder.com/288x162?text=Thimphu" class="card-img-top" alt="Thimphu">
+                <div class="card carousel-card" style="background: #101010;">
+                  <img src="thimphu.jpg" class="card-img-top" alt="Thimphu">
                   <div class="card-body">
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-                  </div>
-                </div>
-
-                <div class="card carousel-card">
-                  <img src="https://via.placeholder.com/288x162?text=Meetang" class="card-img-top" alt="Meetang">
-                  <div class="card-body">
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+                    <p class="card-text">CEO and Founder of StudySphere</p>
                   </div>
                 </div>
               </div>
             </div>
-
-            <!-- Slide 2: card 3 + card 4 -->
-            <div class="carousel-item">
+            <!-- Slide 2 -->
+            <div class="carousel-item" data-name="Meetang" data-quote="Co Founder">
               <div class="cards-row">
-                <div class="card carousel-card">
-                  <img src="https://via.placeholder.com/288x162?text=SkyWarath" class="card-img-top" alt="SkyWarath">
+                <div class="card carousel-card" style="background: #101010;">
+                  <img src="profile.jpg" class="card-img-top" alt="Meetang">
                   <div class="card-body">
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-                  </div>
-                </div>
-
-                <div class="card carousel-card">
-                  <img src="https://via.placeholder.com/288x162?text=Porsche" class="card-img-top" alt="Porsche">
-                  <div class="card-body">
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+                    <p class="card-text">Co Founder of StudySphere</p>
                   </div>
                 </div>
               </div>
             </div>
-
+            <!-- Slide 3 -->
+            <div class="carousel-item" data-name="Sky" data-quote="Co Founder">
+              <div class="cards-row">
+                <div class="card carousel-card" style="background: #101010;">
+                  <img src="profile.jpg" class="card-img-top" alt="Sky">
+                  <div class="card-body">
+                    <p class="card-text">Co Founder of StudySphere</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Slide 4 -->
+            <div class="carousel-item" data-name="Porsche" data-quote="Co Founder">
+              <div class="cards-row">
+                <div class="card carousel-card" style="background: #101010;">
+                  <img src="profile.jpg" class="card-img-top" alt="Porsche">
+                  <div class="card-body">
+                    <p class="card-text">Co Founder of StudySphere</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-
           <!-- controls -->
-          <button class="carousel-control-prev" type="button" data-bs-target="#cardsCarousel" data-bs-slide="prev">
+          <button class="carousel-control-prev" type="button" data-bs-target="#cardsCarousel" data-bs-slide="prev" data-bs-theme="light">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
           </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#cardsCarousel" data-bs-slide="next">
+          <button class="carousel-control-next" type="button" data-bs-target="#cardsCarousel" data-bs-slide="next" data-bs-theme="light">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
           </button>
         </div>
         <!-- /carousel -->
-
+      </div>
+      <div class="col-lg-6">
+        <h1 id="carouselName" class="display-5 fw-bold text-body-emphasis lh-1 mb-3 flicker neon-gold">Thimphu</h1>
+        <figure>
+          <blockquote class="blockquote">
+            <p id="carouselBlockquote" class="lead flicker neon-gold">"A well-known quote, contained in a blockquote element."</p>
+          </blockquote>
+          <figcaption class="blockquote-footer">
+            The <cite title="Source Title" id="carouselQuote">CEO and Founder</cite> of StudySphere
+          </figcaption>
+        </figure>
       </div>
     </div>
-            <div class="col-lg-6"> 
-                <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">About</h1> 
-                <p class="lead">StudySphere is a global platform that brings students together to compete, collaborate, and celebrate the joy of reading, inspiring a lifelong passion for learning.</p> 
-                <div class="d-grid gap-2 d-md-flex justify-content-md-start"> 
-                    <button type="button" class="btn btn-warning btn-lg px-4 me-md-2">Get Started</button> 
-                    <button type="button" class="btn btn-outline-secondary btn-lg px-4">Home</button> 
-                </div> 
-            </div> 
-        </div> 
-    </div>
+  </div>
   
   <div class="container"> 
     <footer class="py-3 my-4"> 
@@ -137,5 +218,148 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</script>
+<script>
+  // Sync name and quote with carousel
+  const carousel = document.getElementById('cardsCarousel');
+  const nameEl = document.getElementById('carouselName');
+  const quoteEl = document.getElementById('carouselQuote');
+  const blockquoteEl = document.getElementById('carouselBlockquote');
+  if (carousel && nameEl && quoteEl && blockquoteEl) {
+    const colorMap = {
+      'Thimphu': 'neon-gold',
+      'Meetang': 'neon-red',
+      'Sky': 'neon-purple',
+      'Porsche': 'neon-blue'
+    };
+    function setNeon(name) {
+      // Remove all neon classes
+      nameEl.classList.remove('neon-gold', 'neon-red', 'neon-purple', 'neon-blue');
+      quoteEl.classList.remove('neon-gold', 'neon-red', 'neon-purple', 'neon-blue');
+      blockquoteEl.classList.remove('neon-gold', 'neon-red', 'neon-purple', 'neon-blue');
+      // Add the correct neon class
+      const neon = colorMap[name] || 'neon-gold';
+      nameEl.classList.add(neon);
+      quoteEl.classList.add(neon);
+      blockquoteEl.classList.add(neon);
+    }
+    carousel.addEventListener('slide.bs.carousel', function (e) {
+      const next = e.relatedTarget;
+      if (next) {
+        // Flicker out
+        nameEl.classList.remove('flicker');
+        quoteEl.classList.remove('flicker');
+        blockquoteEl.classList.remove('flicker');
+        void nameEl.offsetWidth; // force reflow
+        void quoteEl.offsetWidth;
+        void blockquoteEl.offsetWidth;
+        // Set new text
+        const name = next.getAttribute('data-name');
+        nameEl.textContent = name;
+        quoteEl.textContent = next.getAttribute('data-quote');
+        setNeon(name);
+        // Flicker in
+        nameEl.classList.add('flicker');
+        quoteEl.classList.add('flicker');
+        blockquoteEl.classList.add('flicker');
+      }
+    });
+    // Set initial color
+    setNeon(nameEl.textContent);
+  }
+</script>
+<!-- Supabase JS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  // Replace with your Supabase project URL and anon key
+  const SUPABASE_URL = 'https://mtrdbguzixngcvzcxwlz.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10cmRiZ3V6aXhuZ2N2emN4d2x6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxMzY1NTIsImV4cCI6MjA3MjcxMjU1Mn0.Bcedj4oZbqY0sWzTXULtPeiPlNDdy2RnVef_u68tHVU';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Helper: get user from localStorage/session
+  async function getUser() {
+    // Try to get from localStorage (persisted session)
+    let user = null;
+    try {
+      const session = JSON.parse(localStorage.getItem('sb-session'));
+      if (session && session.user) user = session.user;
+    } catch {}
+    // If not found, try Supabase
+    if (!user) {
+      const { data } = await sb.auth.getUser();
+      user = data && data.user;
+    }
+    return user;
+  }
+
+  // On login/signup, save session to localStorage
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      localStorage.setItem('sb-session', JSON.stringify(session));
+    } else {
+      localStorage.removeItem('sb-session');
+    }
+    updateUserUI();
+  });
+
+  // Fetch XP from Supabase 'profiles' table
+	async function getUserXP(userId) {
+		if (!userId) return null;
+		// Assumes a 'profiles' table with 'id' (uuid, matches user.id) and 'xp' (integer)
+		const { data, error } = await sb.from('profiles').select('xp').eq('id', userId).single();
+		if (error) return null;
+		return data?.xp ?? 0;
+	}
+
+  // Update UI: replace login/signup with user info if logged in
+  async function updateUserUI() {
+    const user = await getUser();
+    const userDiv = document.querySelector('.text-end');
+    if (!userDiv) return;
+    if (user) {
+      // Get name and avatar (fallback to email/initial)
+      const name = user.user_metadata?.name || user.email || 'User';
+      const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ffc107&color=222&bold=true`;
+      // Fetch XP from Supabase
+			let xp = await getUserXP(user.id);
+			if (xp === null) xp = 0;
+      userDiv.innerHTML = `
+        <span class="badge rounded-pill bg-warning text-dark me-3 align-middle" style="font-size:1rem;vertical-align:middle;">${xp} XP</span>
+        <div class="dropdown d-inline-block align-middle">
+          <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="${avatar}" alt="avatar" width="32" height="32" class="rounded-circle me-2 border border-warning">
+            <span class="fw-semibold">${name}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="userDropdown" style="background: #101010;">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" id="logoutBtn">Log out</a></li>
+          </ul>
+        </div>
+      `;
+      // Add logout handler
+      setTimeout(() => {
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+          logoutBtn.onclick = async function(e) {
+            e.preventDefault();
+            await sb.auth.signOut();
+            localStorage.removeItem('sb-session');
+            window.location.reload();
+          };
+        }
+      }, 0);
+    } else {
+      // Not logged in: show login/signup
+      userDiv.innerHTML = `
+        <a href="/login.html" type="button" class="btn btn-outline-light me-2">Login</a>
+        <a href="/signup.html" type="button" class="btn btn-warning">Sign-up</a>
+      `;
+    }
+  }
+
+  // On page load
+  updateUserUI();
+</script>
 </body>
 </html>

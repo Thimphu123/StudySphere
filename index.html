@@ -1,163 +1,257 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>StudySphere</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    /* full-viewport background image (fixed for subtle parallax) */
-    .bg-image {
-      position: fixed;
-      inset: 0;
-      background-image: url('bg.jpg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      z-index: 0;
-      will-change: transform;
-      transform: none;
-    }
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>StudySphere</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		/* full-viewport background image (fixed for subtle parallax) */
+		.bg-image {
+		position: fixed;
+		inset: 0;
+		background-image: url('bg.jpg');
+		background-size: cover;
+		background-position: center;
+		background-attachment: fixed;
+		z-index: 0;
+		will-change: transform;
+		transform: none;
+		}
 
-    /* black overlay that fades-in as you scroll */
-    .bg-overlay {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      opacity: 0;
-      transition: opacity 200ms linear;
-      z-index: 1;
-      pointer-events: none;
-    }
+		/* black overlay that fades-in as you scroll */
+		.bg-overlay {
+		position: fixed;
+		inset: 0;
+		background: #000;
+		opacity: 0;
+		transition: opacity 200ms linear;
+		z-index: 1;
+		pointer-events: none;
+		}
 
-    /* content sits above the background */
-    .cover-container {
-      position: relative;
-      z-index: 2;
-      /* keep min height as before */
-      min-height: 100vh;
-      background: transparent;
-    }
+		/* content sits above the background */
+		.cover-container {
+		position: relative;
+		z-index: 2;
+		/* keep min height as before */
+		min-height: 100vh;
+		background: transparent;
+		}
 
-    /* make sure header + main are visible above overlay */
-    header, main { position: relative; z-index: 3; }
+		/* make sure header + main are visible above overlay */
+		header, main { position: relative; z-index: 3; }
 
-    /* small visual tweak so text remains readable on image */
-    body[data-bs-theme="dark"] .nav-link { text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
+		/* small visual tweak so text remains readable on image */
+		body[data-bs-theme="dark"] .nav-link { text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
 
-    /* optional: a little parallax move for the image (subtle) */
-    .bg-image.parallax {
-        transform-origin: center;
-    }
+		/* optional: a little parallax move for the image (subtle) */
+		.bg-image.parallax {
+			transform-origin: center;
+		}
 
-    header, main, .cover-hero, .cover-container, .container {
-        position: relative; /* z-index only works when positioned */
-        z-index: 10;        /* higher than bg/z-overlay */
-    }
+		header, main, .cover-hero, .cover-container, .container {
+			position: relative; /* z-index only works when positioned */
+			z-index: 10;        /* higher than bg/z-overlay */
+		}
 
-    /* Responsive tweak so overlay transitions smooth on small screens */
-    @media (prefers-reduced-motion: reduce) {
-      .bg-overlay { transition: none; }
-      .bg-image { transition: none; }
-    }
-  </style>
+		/* Responsive tweak so overlay transitions smooth on small screens */
+		@media (prefers-reduced-motion: reduce) {
+		.bg-overlay { transition: none; }
+		.bg-image { transition: none; }
+		}
+	</style>
 </head>
 <body class="d-flex flex-column min-vh-100" data-bs-theme="dark">
 
-  <!-- Background layers (fixed, behind everything) -->
-  <div class="bg-image" id="bgImage"></div>
-  <div class="bg-overlay" id="bgOverlay"></div>
+	<!-- Background layers (fixed, behind everything) -->
+	<div class="bg-image" id="bgImage"></div>
+	<div class="bg-overlay" id="bgOverlay"></div>
 
-  <header class="p-3 sticky-top">
-      <div class="container">
-        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-          <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-            <svg class="bi me-2" width="40" height="32" role="img" aria-label="Logo"></svg>
-          </a>
-          <ul class="nav nav-pills col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-            <li><a href="/" class="nav-link px-3 text-warning">Home</a></li>
-            <li><a href="/leaderboard.html" class="nav-link px-3 text-white">Leaderboard</a></li>
-            <li><a href="/practice.html" class="nav-link px-3 text-white">Practice</a></li>
-            <li><a href="/rank.html" class="nav-link px-3 text-white">Rank</a></li>
-            <li><a href="/about.html" class="nav-link px-3 text-white">About</a></li>
-          </ul>
-          <div class="text-end">
-            <button type="button" class="btn btn-outline-light me-2">Login</button>
-            <button type="button" class="btn btn-warning">Sign-up</button>
-          </div>
-        </div>
-      </div>
-    </header>
+	<header class="p-3 sticky-top">
+		<div class="container">
+		<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+			<a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+			<svg class="bi me-2" width="40" height="32" role="img" aria-label="Logo"></svg>
+			</a>
+			<ul class="nav nav-pills col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+			<li><a href="/" class="nav-link px-3 text-warning">Home</a></li>
+			<li><a href="/leaderboard.html" class="nav-link px-3 text-white">Leaderboard</a></li>
+			<li><a href="/practice.html" class="nav-link px-3 text-white">Practice</a></li>
+			<li><a href="/rank.html" class="nav-link px-3 text-white">Rank</a></li>
+			<li><a href="/about.html" class="nav-link px-3 text-white">About</a></li>
+			</ul>
+			<div class="text-end">
+			<a href="/login.html" type="button" class="btn btn-outline-light me-2">Login</a>
+			<a href="/signup.html" type="button" class="btn btn-warning">Sign-up</a>
+			</div>
+		</div>
+		</div>
+	</header>
 
-  <!-- cover-container fills viewport (min-vh-100) and is a column flexbox -->
-  <div class="cover-container d-flex w-100 min-vh-100 p-3 mx-auto flex-column">
-    <!-- main area: my-auto centers it vertically inside the column -->
-    <main class="px-3 my-auto text-center">
-      <h1 class="display-3">Welcome to <span class="text-warning"><strong>StudySphere</strong></span>,</h1>
-      <p class="lead"><span class="text-warning">Read</span> More. <span class="text-warning">Learn</span> More. <span class="text-warning">Be</span> More.</p>
-      <p class="lead py-3">
-        <a href="#" class="btn btn-lg btn-outline-warning">Join Us</a>
-      </p>
-    </main>
-  </div>
-  <div class="container"> 
-    <footer class="py-3 my-4"> 
-      <ul class="nav justify-content-center border-bottom pb-3 mb-3"> 
-        <li class="nav-item"><a href="/" class="nav-link px-2 text-body-secondary">Home</a></li> 
-        <li class="nav-item"><a href="/leaderboard.html" class="nav-link px-2 text-body-secondary">Leaderboard</a></li> 
-        <li class="nav-item"><a href="/practice.html" class="nav-link px-2 text-body-secondary">Practice</a></li> 
-        <li class="nav-item"><a href="/rank.html" class="nav-link px-2 text-body-secondary">Rank</a></li> 
-        <li class="nav-item"><a href="/about.html" class="nav-link px-2 text-body-secondary">About</a></li> 
-      </ul> 
-      <p class="text-center text-body-secondary">© 2025 StudySphere</p> 
-    </footer> 
-  </div>
+	<!-- cover-container fills viewport (min-vh-100) and is a column flexbox -->
+	<div class="cover-container d-flex w-100 min-vh-100 p-3 mx-auto flex-column">
+		<!-- main area: my-auto centers it vertically inside the column -->
+		<main class="px-3 my-auto text-center">
+		<h1 class="display-3">Welcome to <span class="text-warning"><strong>StudySphere</strong></span>,</h1>
+		<p class="lead"><span class="text-warning">Read</span> More. <span class="text-warning">Learn</span> More. <span class="text-warning">Be</span> More.</p>
+		<p class="lead py-3">
+			<a href="/signup.html" class="btn btn-lg btn-outline-warning">Join Us</a>
+		</p>
+		</main>
+	</div>
+	<div class="container"> 
+		<footer class="py-3 my-4"> 
+			<ul class="nav justify-content-center border-bottom pb-3 mb-3"> 
+				<li class="nav-item"><a href="/" class="nav-link px-2 text-body-secondary">Home</a></li> 
+				<li class="nav-item"><a href="/leaderboard.html" class="nav-link px-2 text-body-secondary">Leaderboard</a></li> 
+				<li class="nav-item"><a href="/practice.html" class="nav-link px-2 text-body-secondary">Practice</a></li> 
+				<li class="nav-item"><a href="/rank.html" class="nav-link px-2 text-body-secondary">Rank</a></li> 
+				<li class="nav-item"><a href="/about.html" class="nav-link px-2 text-body-secondary">About</a></li> 
+			</ul> 
+			<p class="text-center text-body-secondary">© 2025 StudySphere</p> 
+		</footer> 
+	</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
-    (function() {
-      const overlay = document.getElementById('bgOverlay');
-      const bg = document.getElementById('bgImage');
+	<!-- Supabase JS CDN -->
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+	<script>
+	// Replace with your Supabase project URL and anon key
+	const SUPABASE_URL = 'https://mtrdbguzixngcvzcxwlz.supabase.co';
+	const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10cmRiZ3V6aXhuZ2N2emN4d2x6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxMzY1NTIsImV4cCI6MjA3MjcxMjU1Mn0.Bcedj4oZbqY0sWzTXULtPeiPlNDdy2RnVef_u68tHVU';
+	const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // how much scroll distance (px) to reach full black
-      // change this to make fade faster/slower (e.g. 400 = faster, 1200 = slower)
-      let fadeDistance = window.innerHeight * 0.9;
+	// Helper: get user from localStorage/session
+	async function getUser() {
+		// Try to get from localStorage (persisted session)
+		let user = null;
+		try {
+		const session = JSON.parse(localStorage.getItem('sb-session'));
+		if (session && session.user) user = session.user;
+		} catch {}
+		// If not found, try Supabase
+		if (!user) {
+		const { data } = await sb.auth.getUser();
+		user = data && data.user;
+		}
+		return user;
+	}
 
-      function updateFadeDistance() {
-        fadeDistance = window.innerHeight * 0.9;
-      }
+	// On login/signup, save session to localStorage
+	sb.auth.onAuthStateChange((event, session) => {
+		if (session) {
+		localStorage.setItem('sb-session', JSON.stringify(session));
+		} else {
+		localStorage.removeItem('sb-session');
+		}
+		updateUserUI();
+	});
 
-      // throttle using requestAnimationFrame for smoothness
-      let ticking = false;
-      function onScroll() {
-        if (!ticking) {
-          window.requestAnimationFrame(() => {
-            const scrollY = window.scrollY || window.pageYOffset;
-            // compute progress [0..1]
-            let progress = Math.min(Math.max(scrollY / fadeDistance, 0), 1);
-            // set overlay opacity
-            overlay.style.opacity = progress.toFixed(3);
+	// Fetch XP from Supabase 'profiles' table
+	async function getUserXP(userId) {
+		if (!userId) return null;
+		// Assumes a 'profiles' table with 'id' (uuid, matches user.id) and 'xp' (integer)
+		const { data, error } = await sb.from('profiles').select('xp').eq('id', userId).single();
+		if (error) return null;
+		return data?.xp ?? 0;
+	}
 
-            // small optional parallax transform for background image
-            const parallax = Math.min(progress * 30, 30); // up to 30px shift
-            bg.style.transform = `translateY(${parallax}px)`;
+	// Update UI: replace login/signup with user info and XP if logged in
+	async function updateUserUI() {
+		const user = await getUser();
+		const userDiv = document.querySelector('.text-end');
+		if (!userDiv) return;
+		if (user) {
+			// Get name and avatar (fallback to email/initial)
+			const name = user.user_metadata?.name || user.email || 'User';
+			const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ffc107&color=222&bold=true`;
+			// Fetch XP from Supabase
+			let xp = await getUserXP(user.id);
+			if (xp === null) xp = 0;
+			userDiv.innerHTML = `
+				<span class="badge rounded-pill bg-warning text-dark me-3 align-middle" style="font-size:1rem;vertical-align:middle;">${xp} XP</span>
+				<div class="dropdown d-inline-block align-middle">
+				  <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+					<img src="${avatar}" alt="avatar" width="32" height="32" class="rounded-circle me-2 border border-warning">
+					<span class="fw-semibold">${name}</span>
+				  </a>
+				  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="userDropdown" style="background: #151515">
+					<li><a class="dropdown-item" href="#">Profile</a></li>
+					<li><hr class="dropdown-divider"></li>
+					<li><a class="dropdown-item" href="#" id="logoutBtn">Log out</a></li>
+				  </ul>
+				</div>
+			`;
+			// Add logout handler
+			setTimeout(() => {
+				const logoutBtn = document.getElementById('logoutBtn');
+				if (logoutBtn) {
+					logoutBtn.onclick = async function(e) {
+						e.preventDefault();
+						await sb.auth.signOut();
+						localStorage.removeItem('sb-session');
+						window.location.reload();
+					};
+				}
+			}, 0);
+		} else {
+			// Not logged in: show login/signup
+			userDiv.innerHTML = `
+				<a href="/login.html" type="button" class="btn btn-outline-light me-2">Login</a>
+				<a href="/signup.html" type="button" class="btn btn-warning">Sign-up</a>
+			`;
+		}
+	}
 
-            ticking = false;
-          });
-          ticking = true;
-        }
-      }
+	// On page load
+	updateUserUI();
+	</script>
 
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', () => {
-        updateFadeDistance();
-        onScroll(); // recalc on resize
-      });
+	<script>
+		(function() {
+		const overlay = document.getElementById('bgOverlay');
+		const bg = document.getElementById('bgImage');
 
-      // initial call (if page isn't at top)
-      onScroll();
-    })();
-  </script>
+		// how much scroll distance (px) to reach full black
+		// change this to make fade faster/slower (e.g. 400 = faster, 1200 = slower)
+		let fadeDistance = window.innerHeight * 0.9;
+
+		function updateFadeDistance() {
+			fadeDistance = window.innerHeight * 0.9;
+		}
+
+		// throttle using requestAnimationFrame for smoothness
+		let ticking = false;
+		function onScroll() {
+			if (!ticking) {
+				window.requestAnimationFrame(() => {
+					const scrollY = window.scrollY || window.pageYOffset;
+					// compute progress [0..1]
+					let progress = Math.min(Math.max(scrollY / fadeDistance, 0), 1);
+					// set overlay opacity
+					overlay.style.opacity = progress.toFixed(3);
+
+					// small optional parallax transform for background image
+					const parallax = Math.min(progress * 30, 30); // up to 30px shift
+					bg.style.transform = `translateY(${parallax}px)`;
+
+					ticking = false;
+				});
+				ticking = true;
+			}
+		}
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+		window.addEventListener('resize', () => {
+			updateFadeDistance();
+			onScroll(); // recalc on resize
+		});
+
+		// initial call (if page isn't at top)
+		onScroll();
+		})();
+	</script>
 </body>
 </html>

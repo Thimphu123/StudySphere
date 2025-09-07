@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StudySphere - Sign Up</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .form-control:focus {
+      border-color: #ffc107 !important;
+      box-shadow: 0 0 0 0.2rem rgba(255,193,7,.25) !important;
+    }
+    body {
+      background-image: url('login_bg.png');
+      background-size: cover;
+      background-position: bottom;
+      background-repeat: no-repeat;
+    }
+  </style>
+</head>
+<body class="d-flex align-items-center justify-content-center min-vh-100 py-4" data-bs-theme="dark">
+  <main class="w-100 m-auto" style="max-width: 400px;">
+    <div class="card shadow rounded-4">
+      <div class="card-body p-4">
+        <form>
+          <h1 class="h2 mb-3 fw-normal text-center p-1">Create your account</h1>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="signupName" placeholder="Your Name">
+            <label for="signupName">Name</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="signupEmail" placeholder="name@example.com">
+            <label for="signupEmail">Email</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="signupPassword" placeholder="Password">
+            <label for="signupPassword">Password</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="signupConfirmPassword" placeholder="Confirm Password">
+            <label for="signupConfirmPassword">Confirm Password</label>
+          </div>
+          <button class="btn btn-warning w-100 py-2" type="submit">Sign up</button>
+        </form>
+      </div>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</script>
+<!-- Supabase JS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  // Replace with your Supabase project URL and anon key
+  const SUPABASE_URL = 'https://mtrdbguzixngcvzcxwlz.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10cmRiZ3V6aXhuZ2N2emN4d2x6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxMzY1NTIsImV4cCI6MjA3MjcxMjU1Mn0.Bcedj4oZbqY0sWzTXULtPeiPlNDdy2RnVef_u68tHVU';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  document.querySelector('form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('button[type="submit"]');
+    if (!btn) return;
+    btn.disabled = true;
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Signing up...';
+    try {
+        const name = document.getElementById('signupName').value;
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+        const confirm = document.getElementById('signupConfirmPassword').value;
+        if (password !== confirm) {
+            alert('Passwords do not match!');
+            return;
+        }
+        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { name } } });
+        if (error) {
+            alert(error.message);
+        } else {
+            // Insert into profiles table (if user.id is available)
+            const userId = data?.user?.id;
+            if (userId) {
+                // Insert profile row with id, name, xp=0
+                await sb.from('profiles').insert([{ id: userId, name: name, xp: 0 }]);
+            }
+            window.location.href = '/login.html'; // Redirect if needed
+        }
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+    }
+  });
+</script>
+</body>
+</html>
