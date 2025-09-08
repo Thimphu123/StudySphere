@@ -134,7 +134,7 @@
           </div> -->
           <div class="carousel-inner">
             <!-- Slide 1 -->
-            <div class="carousel-item active" data-name="Thimphu" data-quote="CEO and Founder">
+            <div class="carousel-item active" data-name="Thimphu" data-quote="CEO and Founder" data-quote-text='"I just lost someone by loving them.\nI just love someone by losing them"'>
               <div class="cards-row">
                 <div class="card carousel-card" style="background: #101010;">
                   <img src="thimphu.jpg" class="card-img-top" alt="Thimphu">
@@ -145,7 +145,7 @@
               </div>
             </div>
             <!-- Slide 2 -->
-            <div class="carousel-item" data-name="Meetang" data-quote="Co Founder">
+            <div class="carousel-item" data-name="Meetang" data-quote="Co Founder" data-quote-text='"Quote here"'>
               <div class="cards-row">
                 <div class="card carousel-card" style="background: #101010;">
                   <img src="profile.jpg" class="card-img-top" alt="Meetang">
@@ -156,7 +156,7 @@
               </div>
             </div>
             <!-- Slide 3 -->
-            <div class="carousel-item" data-name="Sky" data-quote="Co Founder">
+            <div class="carousel-item" data-name="Sky" data-quote="Co Founder" data-quote-text='"Quote here"'>
               <div class="cards-row">
                 <div class="card carousel-card" style="background: #101010;">
                   <img src="profile.jpg" class="card-img-top" alt="Sky">
@@ -167,7 +167,7 @@
               </div>
             </div>
             <!-- Slide 4 -->
-            <div class="carousel-item" data-name="Porsche" data-quote="Co Founder">
+            <div class="carousel-item" data-name="Porsche" data-quote="Co Founder" data-quote-text='"Quote here"'>
               <div class="cards-row">
                 <div class="card carousel-card" style="background: #101010;">
                   <img src="profile.jpg" class="card-img-top" alt="Porsche">
@@ -243,6 +243,22 @@
       quoteEl.classList.add(neon);
       blockquoteEl.classList.add(neon);
     }
+
+    // Escape HTML and convert literal backslash-n sequences to <br>
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    function setBlockquoteFromAttr(raw) {
+      const text = raw == null ? '' : String(raw);
+      // convert escaped \n (backslash + n) into <br>
+      const safe = escapeHtml(text).replace(/\\n/g, '<br>');
+      blockquoteEl.innerHTML = safe;
+    }
     carousel.addEventListener('slide.bs.carousel', function (e) {
       const next = e.relatedTarget;
       if (next) {
@@ -256,7 +272,10 @@
         // Set new text
         const name = next.getAttribute('data-name');
         nameEl.textContent = name;
-        quoteEl.textContent = next.getAttribute('data-quote');
+        // Prefer explicit quote text per slide; fallback to short caption
+  const quoteText = next.getAttribute('data-quote-text') || next.getAttribute('data-quote') || '';
+  quoteEl.textContent = next.getAttribute('data-quote') || '';
+  setBlockquoteFromAttr(quoteText);
         setNeon(name);
         // Flicker in
         nameEl.classList.add('flicker');
@@ -265,7 +284,19 @@
       }
     });
     // Set initial color
-    setNeon(nameEl.textContent);
+    // initialize blockquote and caption based on the active slide
+    (function initCarouselText(){
+      const active = document.querySelector('#cardsCarousel .carousel-item.active');
+      if (active) {
+        const name = active.getAttribute('data-name') || nameEl.textContent;
+        nameEl.textContent = name;
+        quoteEl.textContent = active.getAttribute('data-quote') || quoteEl.textContent;
+        setBlockquoteFromAttr(active.getAttribute('data-quote-text') || active.getAttribute('data-quote') || blockquoteEl.textContent);
+        setNeon(name);
+      } else {
+        setNeon(nameEl.textContent);
+      }
+    })();
   }
 </script>
 <!-- Supabase JS CDN -->
