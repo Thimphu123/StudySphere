@@ -5,6 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>StudySphere</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        /* Static width for leaderboard area (responsive: will shrink on very small screens) */
+        #leaderboard-list, #leaderboard-pagination {
+            width: 720px;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* Slightly smaller Add status button */
+        .status-container .add-status-btn {
+            padding: .12rem .38rem;
+            font-size: .78rem;
+            line-height: 1;
+            border-radius: .35rem;
+        }
+        /* Make the icon inside the small confirm button larger without increasing the button size */
+        .status-confirm {
+            padding: .32rem .32rem; /* keep button small */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .status-confirm .bi {
+            font-size: 1.15rem; /* larger icon */
+            line-height: 1;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body class="d-flex flex-column min-vh-100" data-bs-theme="dark">
     <header class="p-3 sticky-top bg-dark shadow-sm">
@@ -149,8 +179,8 @@
 
     // Fetch all users from Supabase, order by XP desc
     async function fetchLeaderboard() {
-        // Assumes 'profiles' table with id, xp, and optional name/avatar
-        const { data, error } = await sb.from('profiles').select('id,xp,name,avatar').order('xp', { ascending: false });
+        // Assumes 'profiles' table with id, xp, and optional name/avatar/status
+        const { data, error } = await sb.from('profiles').select('id,xp,name,avatar,status').order('xp', { ascending: false });
         if (error) {
             document.getElementById('leaderboard-list').innerHTML = `<div class='text-danger'>Failed to load leaderboard.</div>`;
             return [];
@@ -171,15 +201,17 @@
         }
         list.innerHTML = pageData.map((user, idx) => {
             const rank = start + idx + 1;
-            const name = user.name || user.id.slice(0, 8) + '...';
-            const avatar = user.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ffc107&color=222&bold=true`;
+            const name = user.name || (user.id ? user.id.slice(0, 8) + '...' : 'User');
+            const avatar = (user.avatar || user.avatar_url) || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ffc107&color=222&bold=true`;
             return `
                 <div class="list-group-item d-flex gap-3 py-3 align-items-center">
                     <span class="fs-5 fw-bold text-warning" style="width:2.5em;display:inline-block;text-align:right;">#${rank}</span>
                     <img src="${avatar}" alt="avatar" width="40" height="40" class="rounded-circle flex-shrink-0 border border-warning">
                     <div class="d-flex flex-column flex-grow-1">
                         <span class="fw-semibold">${name}</span>
-                        <span class="text-secondary small">${user.id}</span>
+                        <div class="status-container" data-user-id="${user.id}" data-status="${(user.status ?? '')}">
+                            <span class="text-secondary small status-text">${user.status ?? ''}</span>
+                        </div>
                     </div>
                     <span class="badge bg-warning text-dark fs-6 align-middle">${user.xp ?? 0} XP</span>
                 </div>
@@ -243,6 +275,92 @@
         currentPage = 1;
         renderLeaderboardPage();
     });
+
+    // After rendering, attach status editor handlers
+    function renderStatusEditors() {
+        const userPromise = getUser();
+        userPromise.then(currentUser => {
+            document.querySelectorAll('.status-container').forEach(el => {
+                const userId = el.getAttribute('data-user-id');
+                const status = el.getAttribute('data-status') || '';
+                const statusText = el.querySelector('.status-text');
+                // Clear previous handlers
+                el.onclick = null;
+                // If this is the current user's row, allow editing
+                if (currentUser && currentUser.id === userId) {
+                    if (!status) {
+                        // show Add status button
+                        el.innerHTML = `<button class="btn btn-sm btn-outline-warning add-status-btn">+ Add status</button>`;
+                        const btn = el.querySelector('.add-status-btn');
+                        btn.onclick = function(e) {
+                            e.stopPropagation();
+                            openStatusEditor(el, userId, '');
+                        };
+                    } else {
+                        // show the status text but make it clickable to edit
+                        el.innerHTML = `<span class="text-secondary small status-text clickable">${escapeHtml(status)}</span>`;
+                        const txt = el.querySelector('.status-text');
+                        txt.style.cursor = 'pointer';
+                        txt.onclick = function(e) {
+                            e.stopPropagation();
+                            openStatusEditor(el, userId, status);
+                        };
+                    }
+                } else {
+                    // Not the owner: just display status or nothing
+                    el.innerHTML = `<span class="text-secondary small">${escapeHtml(status)}</span>`;
+                }
+            });
+        });
+    }
+
+    function openStatusEditor(containerEl, userId, currentStatus) {
+        containerEl.innerHTML = `
+            <div class="d-flex gap-2 align-items-center">
+                <input type="text" class="form-control form-control-sm status-input" value="${escapeHtml(currentStatus)}" placeholder="Enter status" />
+                <button class="btn btn-sm btn-warning status-confirm"><i class="bi bi-check-lg"></i></button>
+            </div>
+        `;
+        const input = containerEl.querySelector('.status-input');
+        const confirm = containerEl.querySelector('.status-confirm');
+        input.focus();
+        confirm.onclick = async function(e) {
+            e.stopPropagation();
+            const val = input.value.trim();
+            try {
+                await saveStatus(userId, val);
+                // update in-memory data and re-render page
+                const userObj = leaderboardData.find(u => u.id === userId);
+                if (userObj) userObj.status = val;
+                renderLeaderboardPage();
+            } catch (err) {
+                alert('Failed to save status.');
+                console.error(err);
+            }
+        };
+    }
+
+    async function saveStatus(userId, status) {
+        // Only allow updating own status
+        const currentUser = await getUser();
+        if (!currentUser || currentUser.id !== userId) throw new Error('Unauthorized');
+        const { data, error } = await sb.from('profiles').update({ status: status }).eq('id', userId);
+        if (error) throw error;
+        return data;
+    }
+
+    // small helper to escape HTML when inserting into DOM
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, function(m) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]; });
+    }
+
+    // Re-attach editors after each render
+    const originalRenderLeaderboardPage = renderLeaderboardPage;
+    renderLeaderboardPage = function() {
+        originalRenderLeaderboardPage();
+        renderStatusEditors();
+    };
     </script>
 </body>
 </html>
