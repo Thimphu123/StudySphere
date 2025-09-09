@@ -639,6 +639,15 @@
 		document.getElementById('circle-timer').style.display = 'none';
 		if (pauseResumeBtn) pauseResumeBtn.style.display = 'none';
 		if (sessionResetBtn) sessionResetBtn.style.display = 'none';
+		// Pause timer when tab is unfocused or window loses focus
+		document.addEventListener('visibilitychange', () => {
+			if (document.hidden) {
+				pauseTimer();
+			}
+		});
+		window.addEventListener('blur', () => {
+			pauseTimer();
+		});
 	</script>
 	
 

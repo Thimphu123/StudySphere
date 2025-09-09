@@ -480,6 +480,18 @@
 			}, 2000);
 		}
 
+		// Stop the match when the tab/window loses focus (treat as user stop)
+		document.addEventListener('visibilitychange', () => {
+			if (document.hidden && inMatch) {
+				endMatch(false, null);
+			}
+		});
+		window.addEventListener('blur', () => {
+			if (inMatch) {
+				endMatch(false, null);
+			}
+		});
+
 	</script>
 </body>
 </html>
