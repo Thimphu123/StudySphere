@@ -10,7 +10,7 @@
 		.bg-image {
 		position: fixed;
 		inset: 0;
-		background-image: url('bg.jpg');
+		background-image: url('bg.webp');
 		background-size: cover;
 		background-position: center;
 		background-attachment: fixed;
@@ -42,6 +42,13 @@
 		/* make sure header + main are visible above overlay */
 		header, main { position: relative; z-index: 3; }
 
+		/* header starts transparent, becomes more opaque on scroll */
+		header.sticky-top {
+			background-color: rgba(0,0,0,0);
+			backdrop-filter: saturate(120%) blur(0px);
+			transition: background-color 200ms linear, backdrop-filter 200ms linear, box-shadow 200ms linear;
+		}
+
 		/* small visual tweak so text remains readable on image */
 		body[data-bs-theme="dark"] .nav-link { text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
 
@@ -59,6 +66,101 @@
 		@media (prefers-reduced-motion: reduce) {
 		.bg-overlay { transition: none; }
 		.bg-image { transition: none; }
+		}
+
+		/* ====== Feedback Scroller ====== */
+		.feedback-section {
+			position: relative;
+			z-index: 10;
+		}
+
+		.feedback-scroller {
+			overflow: hidden;
+			mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+			-webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+		}
+
+		.feedback-track {
+			display: flex;
+			gap: 1rem;
+			width: max-content;
+			animation: feedback-scroll 40s linear infinite;
+			will-change: transform;
+			padding-block: .5rem;
+		}
+
+		.feedback-scroller:hover .feedback-track {
+			animation-play-state: paused;
+		}
+
+		.feedback-card {
+			flex: 0 0 auto;
+			min-width: 320px;
+			max-width: 360px;
+			background-color: #000;
+		}
+
+		@keyframes feedback-scroll {
+			from { transform: translateX(0); }
+			to { transform: translateX(-50%); }
+		}
+
+		/* ====== Join Count + Wireframe Globe ====== */
+		.join-section {
+			position: relative;
+			z-index: 10;
+			min-height: 100vh;
+		}
+
+		.globe-wrapper {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-bottom: 1.5rem;
+		}
+
+		.globe {
+			width: 220px;
+			height: 220px;
+			border-radius: 50%;
+			position: relative;
+			background:
+				repeating-conic-gradient(from 0deg, rgba(255,255,255,0.15) 0deg 1deg, transparent 1deg 15deg),
+				radial-gradient(circle at 50% 50%, rgba(255,255,255,0.08), rgba(0,0,0,0.2) 60%);
+			box-shadow: inset 0 0 30px rgba(0,0,0,0.6), 0 0 30px rgba(0,0,0,0.4);
+			overflow: hidden;
+			animation: globe-spin 24s linear infinite;
+		}
+
+		/* latitude lines */
+		.globe::before {
+			content: "";
+			position: absolute;
+			inset: 0;
+			border-radius: 50%;
+			background:
+				repeating-radial-gradient(circle at 50% 50%, transparent 0 10px, rgba(255,255,255,0.12) 10px 11px);
+			mask-image: radial-gradient(circle at 50% 50%, black 60%, transparent 62%);
+			-webkit-mask-image: radial-gradient(circle at 50% 50%, black 60%, transparent 62%);
+		}
+
+		/* subtle specular highlight */
+		.globe::after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			border-radius: 50%;
+			background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.18), transparent 45%);
+			pointer-events: none;
+		}
+
+		@keyframes globe-spin {
+			from { transform: rotate(0deg); }
+			to { transform: rotate(360deg); }
+		}
+
+		.join-number {
+			font-variant-numeric: tabular-nums;
 		}
 	</style>
 </head>
@@ -100,6 +202,129 @@
 		</p>
 		</main>
 	</div>
+	
+
+	<!-- Feedback Scrolling Cards -->
+	<section class="feedback-section py-5">
+		<div class="container">
+			<h2 class="h3 text-center mb-4">What learners say</h2>
+		</div>
+		<div class="feedback-scroller">
+			<div class="feedback-track">
+				<!-- Set A -->
+				<div class="card border border-secondary-subtle feedback-card">
+					<div class="card-body">
+						<p class="card-text">“StudySphere turned my daily commute into a productive study sprint. The practice sets are spot on!”</p>
+						<div class="d-flex align-items-center mt-3">
+							<img src="https://i.pravatar.cc/40?img=1" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+							<div>
+								<div class="fw-semibold">Aarav S.</div>
+								<div class="text-body-secondary small">B.Tech, 2nd Year</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card border border-secondary-subtle feedback-card">
+					<div class="card-body">
+						<p class="card-text">“The XP and leaderboard actually keep me motivated. I log in every day now.”</p>
+						<div class="d-flex align-items-center mt-3">
+							<img src="https://i.pravatar.cc/40?img=2" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+							<div>
+								<div class="fw-semibold">Maya T.</div>
+								<div class="text-body-secondary small">Aspirant</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card border border-secondary-subtle feedback-card">
+					<div class="card-body">
+						<p class="card-text">“Clean UI, great questions, and instant feedback. Exactly what I needed.”</p>
+						<div class="d-flex align-items-center mt-3">
+							<img src="https://i.pravatar.cc/40?img=3" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+							<div>
+								<div class="fw-semibold">Rahul K.</div>
+								<div class="text-body-secondary small">Working Professional</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card border border-secondary-subtle feedback-card">
+					<div class="card-body">
+						<p class="card-text">“Increase my focus and productivity surprisingly.”</p>
+						<div class="d-flex align-items-center mt-3">
+							<img src="https://i.pravatar.cc/40?img=4" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+							<div>
+								<div class="fw-semibold">Bhavik R.</div>
+								<div class="text-body-secondary small">L.L.B, 1st Year</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Set B (duplicate for seamless loop) -->
+				<div class="card border border-secondary-subtle feedback-card">
+					<div class="card-body">
+						<p class="card-text">“StudySphere turned my daily commute into a productive study sprint. The practice sets are spot on!”</p>
+						<div class="d-flex align-items-center mt-3">
+							<img src="https://i.pravatar.cc/40?img=1" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+							<div>
+								<div class="fw-semibold">Aarav S.</div>
+								<div class="text-body-secondary small">B.Tech, 2nd Year</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card border border-secondary-subtle feedback-card">
+					<div class="card-body">
+						<p class="card-text">“The XP and leaderboard actually keep me motivated. I log in every day now.”</p>
+						<div class="d-flex align-items-center mt-3">
+							<img src="https://i.pravatar.cc/40?img=2" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+							<div>
+								<div class="fw-semibold">Maya T.</div>
+								<div class="text-body-secondary small">Aspirant</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card border border-secondary-subtle feedback-card">
+					<div class="card-body">
+						<p class="card-text">“Clean UI, great questions, and instant feedback. Exactly what I needed.”</p>
+						<div class="d-flex align-items-center mt-3">
+							<img src="https://i.pravatar.cc/40?img=3" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+							<div>
+								<div class="fw-semibold">Rahul K.</div>
+								<div class="text-body-secondary small">Working Professional</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="card border border-secondary-subtle feedback-card">
+					<div class="card-body">
+						<p class="card-text">“Increase my focus and productivity surprisingly.”</p>
+						<div class="d-flex align-items-center mt-3">
+							<img src="https://i.pravatar.cc/40?img=4" class="rounded-circle me-2" width="32" height="32" alt="avatar">
+							<div>
+								<div class="fw-semibold">Bhavik R.</div>
+								<div class="text-body-secondary small">L.L.B, 1st Year</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Join count full-screen section -->
+	<section class="join-section d-flex align-items-center justify-content-center py-5">
+		<div class="container text-center">
+			<div class="globe-wrapper">
+				<div id="globeMount" style="width: 100%; max-width: 520px; margin: 0 auto;"></div>
+			</div>
+			<div class="display-3 fw-bold join-number text-warning" id="joinCounter">12,345</div>
+			<p class="lead text-body-secondary mt-2">people have joined us.</p>
+		</div>
+	</section>
+
 	<div class="container"> 
 		<footer class="py-3 my-4"> 
 			<ul class="nav justify-content-center border-bottom pb-3 mb-3"> 
@@ -117,6 +342,7 @@
 
 	<!-- Supabase JS CDN -->
 	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+	<!-- Three.js will be loaded via ES modules below -->
 	<script>
 	// Replace with your Supabase project URL and anon key
 	const SUPABASE_URL = 'https://mtrdbguzixngcvzcxwlz.supabase.co';
@@ -213,6 +439,7 @@
 		(function() {
 		const overlay = document.getElementById('bgOverlay');
 		const bg = document.getElementById('bgImage');
+		const header = document.querySelector('header');
 
 		// how much scroll distance (px) to reach full black
 		// change this to make fade faster/slower (e.g. 400 = faster, 1200 = slower)
@@ -232,6 +459,16 @@
 					let progress = Math.min(Math.max(scrollY / fadeDistance, 0), 1);
 					// set overlay opacity
 					overlay.style.opacity = progress.toFixed(3);
+					// set header background opacity to match, with a cap for readability
+					if (header) {
+						const headerMax = 0.85;
+						const alpha = Math.min(progress * headerMax, headerMax);
+						header.style.backgroundColor = `rgba(0,0,0, ${alpha.toFixed(3)})`;
+						// subtle shadow as it becomes opaque
+						header.style.boxShadow = alpha > 0 ? `0 2px 12px rgba(0,0,0, ${Math.max(alpha * 0.6, 0.2).toFixed(3)})` : 'none';
+						// optional slight blur once sufficiently opaque
+						header.style.backdropFilter = alpha > 0.2 ? 'saturate(120%) blur(6px)' : 'saturate(120%) blur(0px)';
+					}
 
 					// small optional parallax transform for background image
 					const parallax = Math.min(progress * 30, 30); // up to 30px shift
@@ -252,6 +489,112 @@
 		// initial call (if page isn't at top)
 		onScroll();
 		})();
+	</script>
+
+	<script>
+	// Join counter + globe randomization
+	(function() {
+		const counterEl = document.getElementById('joinCounter');
+		if (!counterEl) return;
+
+		// Initialize number near a believable value
+		let value = 12345 + Math.floor(Math.random() * 5000);
+
+		function formatNumber(n) {
+			return n.toLocaleString(undefined);
+		}
+
+		function tick() {
+			// random small increment 1-20, with occasional surge
+			let inc = 1 + Math.floor(Math.random() * 20);
+			if (Math.random() < 0.08) inc += 100 + Math.floor(Math.random() * 200);
+			value += inc;
+			counterEl.textContent = formatNumber(value);
+			// next tick between 0.6s and 2.2s
+			const next = 600 + Math.random() * 1600;
+			setTimeout(tick, next);
+		}
+
+		counterEl.textContent = formatNumber(value);
+		setTimeout(tick, 1000);
+	})();
+	</script>
+
+	<!-- Import map to resolve bare specifier 'three' for JSM loaders -->
+	<script type="importmap">
+	{
+		"imports": {
+			"three": "https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.module.js"
+		}
+	}
+	</script>
+
+	<script type="module">
+	// Three.js globe setup (ES modules). Provide your GLB/GLTF path in modelUrl.
+	import * as THREE from 'three';
+	import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.159.0/examples/jsm/loaders/GLTFLoader.js';
+
+	const mount = document.getElementById('globeMount');
+	if (mount) {
+		const modelUrl = '/globe.glb';
+		const scene = new THREE.Scene();
+		const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+		camera.position.set(0, 0, 3);
+
+		const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+		renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+		renderer.setSize(400, 400);
+		mount.appendChild(renderer.domElement);
+
+		// Lights
+		const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+		scene.add(ambient);
+		const dir = new THREE.DirectionalLight(0xffffff, 0.6);
+		dir.position.set(3, 5, 2);
+		scene.add(dir);
+
+		let globe = null;
+		const loader = new GLTFLoader();
+		loader.load(modelUrl, (gltf) => {
+			globe = gltf.scene;
+			// Center and scale
+			const box = new THREE.Box3().setFromObject(globe);
+			const size = box.getSize(new THREE.Vector3()).length();
+			const scale = 1.6 / size; // normalize size
+			globe.scale.setScalar(scale * 2.1);
+			box.setFromObject(globe);
+			const center = box.getCenter(new THREE.Vector3());
+			globe.position.sub(center);
+			scene.add(globe);
+		}, undefined, (err) => {
+			console.warn('Failed to load globe model:', err);
+		});
+
+		// Responsive sizing based on mount width
+		function resize() {
+			const w = Math.min(mount.clientWidth || 400, 520);
+			const h = w; // square canvas
+			renderer.setSize(w, h);
+			camera.aspect = w / h;
+			camera.updateProjectionMatrix();
+		}
+		resize();
+		window.addEventListener('resize', resize);
+
+		// Random rotation direction and speed
+		const dirSign = Math.random() > 0.5 ? 1 : -1;
+		const baseSpeed = 0.003 + Math.random() * 0.004; // 0.003 - 0.007
+
+		function animate() {
+			requestAnimationFrame(animate);
+			if (globe) {
+				globe.rotation.y += dirSign * baseSpeed;
+				globe.rotation.x = Math.sin(Date.now() * 0.0002) * 0.1; // gentle tilt
+			}
+			renderer.render(scene, camera);
+		}
+		animate();
+	}
 	</script>
 </body>
 </html>
