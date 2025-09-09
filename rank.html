@@ -306,7 +306,7 @@
 			// restore find button to initial state
 			if (findBtn) {
 				findBtn.style.display = 'inline-block';
-				findBtn.textContent = 'Find Opponent';
+				findBtn.textContent = 'Find a Player';
 				findBtn.classList.remove('btn-danger');
 				findBtn.classList.add('btn-warning');
 				findBtn.disabled = false;
@@ -376,7 +376,7 @@
 			findBtn.disabled = true;
 			findBtn.textContent = 'Searching...';
 			await new Promise(r => setTimeout(r, 1000 + Math.random() * 1500));
-			findBtn.textContent = 'Opponent Found!';
+			findBtn.textContent = 'Player Found!';
 			setTimeout(() => findBtn.textContent = 'Start Match', 700);
 			// Start match
 			setTimeout(() => {
@@ -465,7 +465,7 @@
 				hideMatchArea();
 				if (findBtn) {
 					findBtn.disabled = false;
-					findBtn.textContent = 'Find Opponent';
+					findBtn.textContent = 'Start';
 					findBtn.classList.remove('btn-danger');
 					findBtn.classList.add('btn-warning');
 				}
