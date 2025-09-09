@@ -26,11 +26,41 @@
 				</div>
 			</div>
 		</div>
+
+	<!-- recording preview moved into matchArea so it appears beside the timer -->
     </header>
 
-	<div class="container">
-		<div class="alert alert-warning text-center my-4" role="alert">
-			<strong>Note:</strong> The Rank feature is coming soon! Stay tuned for updates.
+	<div class="container py-4">
+		<!-- <div class="alert alert-warning text-center my-4" role="alert">
+			<strong>Rank Challenge</strong> — Compete against a bot to earn bonus XP.
+		</div> -->
+
+		<!-- Inline match area: circular timer + stop button (replaces modal) -->
+		<div id="matchArea" class="d-flex flex-column align-items-center" style="display:none; gap:1rem;">
+			<div class="d-flex align-items-start" style="gap:2rem;">
+				<div id="circle-match" style="width:320px;height:320px;position:relative;">
+					<svg id="matchSvg" width="320" height="320" viewBox="0 0 260 260" style="transform:rotate(-90deg);">
+						<circle cx="130" cy="130" r="110" stroke="#222" stroke-width="18" fill="none" />
+						<circle id="matchCircle" cx="130" cy="130" r="110" stroke="#ffc107" stroke-width="14" fill="none" stroke-linecap="round" stroke-dasharray="690" stroke-dashoffset="690" />
+					</svg>
+					<div id="matchTimer" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:700;color:#ffc107;">00:00</div>
+				</div>
+				<!-- Recording preview shown to the right of the timer -->
+				<div id="recordPreview" style="display:none;flex-direction:column;align-items:center;gap:0.6rem;">
+					<div id="recordBlack" style="width:220px;height:150px;border-radius:1.2em;background:#111;box-shadow:0 0 16px 2px #222;display:flex;align-items:center;justify-content:center;"></div>
+					<video id="recordVideo" width="220" height="150" style="border-radius:1.2em;object-fit:cover;background:#111;box-shadow:0 0 16px 2px #dc3545;display:none;" autoplay muted playsinline></video>
+					<span id="recordStatus" style="display:none;align-items:center;gap:0.7em;">
+						<span id="recordDot" style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#dc3545;box-shadow:0 0 12px 3px #dc3545;animation:record-blink 1s infinite alternate;"></span>
+						<span class="fw-semibold text-danger">Tracking</span>
+					</span>
+				</div>
+			</div>
+			<div class="d-flex flex-column align-items-center" style="gap:.75rem;">
+				<div id="matchStatus" class="text-muted">Start a match now!</div>
+				<div class="d-inline-flex align-items-center gap-2">
+					<button id="findOpponentBtn" class="btn btn-warning fw-semibold">Start</button>
+				</div>
+			</div>
 		</div>
 	</div>
   
@@ -140,6 +170,242 @@
 
 		// On page load
 		updateUserUI();
+
+		// --- Rank page logic ---
+	const findBtn = document.getElementById('findOpponentBtn');
+	const matchAreaEl = document.getElementById('matchArea');
+	const matchTimerEl = document.getElementById('matchTimer');
+	const matchStatusEl = document.getElementById('matchStatus');
+
+		let matchInterval = null;
+		let matchElapsed = 0;
+		let botStopAt = null; // seconds
+		let inMatch = false;
+
+		// Reuse RPC helper pattern from practice page
+		async function addXpViaRpc(minutes, flat = false) {
+			const mins = Math.max(1, Math.min(360, Number(minutes) || 0)); // clamp to [1,360]
+			try {
+				const { data, error } = await sb.rpc('award_xp', { p_minutes: mins, p_flat: flat });
+				if (error) throw error;
+				return Array.isArray(data) ? data[0] : data;
+			} catch (err) {
+				console.error('award_xp RPC error:', err);
+				throw err;
+			}
+		}
+
+		function formatTimeSimple(secs) {
+			const m = Math.floor(secs / 60).toString().padStart(2, '0');
+			const s = (secs % 60).toString().padStart(2, '0');
+			return `${m}:${s}`;
+		}
+
+		function showMatchArea() {
+			if (!matchAreaEl) return;
+			matchAreaEl.style.display = 'flex';
+			// switch find button into Stop mode
+			if (findBtn) {
+				findBtn.textContent = 'Stop';
+				findBtn.classList.remove('btn-warning');
+				findBtn.classList.add('btn-danger');
+				findBtn.disabled = false;
+			}
+			// show recording preview and enlarge it to match practice UX
+			const preview = document.getElementById('recordPreview');
+			const black = document.getElementById('recordBlack');
+			const video = document.getElementById('recordVideo');
+			if (preview) preview.style.display = 'flex';
+			if (black) {
+				black.style.width = '420px';
+				black.style.height = '315px';
+				black.style.borderRadius = '1.5em';
+			}
+			if (video) {
+				video.style.width = '420px';
+				video.style.height = '315px';
+			}
+		}
+		function hideMatchArea() {
+			if (!matchAreaEl) return;
+			matchAreaEl.style.display = 'none';
+			// restore find button to initial state
+			if (findBtn) {
+				findBtn.style.display = 'inline-block';
+				findBtn.textContent = 'Find Opponent';
+				findBtn.classList.remove('btn-danger');
+				findBtn.classList.add('btn-warning');
+				findBtn.disabled = false;
+			}
+			// hide recording preview and restore small sizes
+			const preview = document.getElementById('recordPreview');
+			const black = document.getElementById('recordBlack');
+			const video = document.getElementById('recordVideo');
+			if (preview) preview.style.display = 'none';
+			if (black) {
+				black.style.width = '220px';
+				black.style.height = '150px';
+				black.style.borderRadius = '1.2em';
+			}
+			if (video) {
+				video.style.width = '220px';
+				video.style.height = '150px';
+			}
+		}
+
+		// --- Recording helpers (same pattern as practice page) ---
+		let recordStream = null;
+		async function startRecordingPreview() {
+			const black = document.getElementById('recordBlack');
+			const video = document.getElementById('recordVideo');
+			const status = document.getElementById('recordStatus');
+			if (black) black.style.display = 'none';
+			if (video) video.style.display = 'block';
+			if (status) status.style.display = 'flex';
+			try {
+				if (!recordStream) {
+					recordStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false });
+				}
+				if (video) video.srcObject = recordStream;
+			} catch (err) {
+				if (black) black.style.display = 'flex';
+				if (video) video.style.display = 'none';
+				if (status) status.style.display = 'none';
+				console.warn('Camera unavailable:', err);
+			}
+		}
+		function stopRecordingPreview() {
+			const black = document.getElementById('recordBlack');
+			const video = document.getElementById('recordVideo');
+			const status = document.getElementById('recordStatus');
+			if (black) black.style.display = 'flex';
+			if (video) video.style.display = 'none';
+			if (status) status.style.display = 'none';
+			if (recordStream) {
+				const tracks = recordStream.getTracks();
+				tracks.forEach(t => t.stop());
+				recordStream = null;
+				if (video) video.srcObject = null;
+			}
+		}
+
+		findBtn.addEventListener('click', async function() {
+			// If already in a match, this button acts as Stop
+			if (inMatch) {
+				findBtn.disabled = true;
+				findBtn.textContent = 'Stopping...';
+				// user stopped before bot -> lose
+				endMatch(false, null);
+				return;
+			}
+			// Simulate matchmaking delay
+			findBtn.disabled = true;
+			findBtn.textContent = 'Searching...';
+			await new Promise(r => setTimeout(r, 1000 + Math.random() * 1500));
+			findBtn.textContent = 'Opponent Found!';
+			setTimeout(() => findBtn.textContent = 'Start Match', 700);
+			// Start match
+			setTimeout(() => {
+				startMatch();
+				findBtn.disabled = false;
+				// after starting, show Stop label
+				if (findBtn) {
+					findBtn.textContent = 'Stop';
+					findBtn.classList.remove('btn-warning');
+					findBtn.classList.add('btn-danger');
+				}
+			}, 900);
+		});
+
+		function startMatch() {
+			if (inMatch) return;
+			inMatch = true;
+			matchElapsed = 0;
+			// Bot chooses a random stop between 15 and 60 minutes
+			const botMinutes = 15 + Math.floor(Math.random() * 46); // 15..60
+			botStopAt = botMinutes * 60;
+			matchStatusEl.textContent = `Bot will stop after ${botMinutes} minutes (secret). Good luck!`;
+			showMatchArea();
+			// start local timer
+			matchTimerEl.textContent = formatTimeSimple(matchElapsed);
+			matchInterval = setInterval(() => {
+				matchElapsed++;
+				matchTimerEl.textContent = formatTimeSimple(matchElapsed);
+				// animate circle progress: percent elapsed of botStopAt (cap at 1)
+				const circle = document.getElementById('matchCircle');
+				if (circle && botStopAt) {
+					const r = parseFloat(circle.getAttribute('r')) || 110;
+					const dash = 2 * Math.PI * r;
+					const percent = Math.min(matchElapsed / botStopAt, 1);
+					circle.setAttribute('stroke-dasharray', dash);
+					circle.setAttribute('stroke-dashoffset', Math.max(0, dash - dash * percent));
+				}
+				// Bot stops when reaches its time
+				if (matchElapsed >= botStopAt) {
+					// bot stopped first -> user wins
+					endMatch(true, null);
+				}
+			}, 1000);
+			// start recording preview
+			startRecordingPreview();
+		}
+
+		async function endMatch(userStillReading, modalInstance) {
+			// userStillReading: true if user outlasted bot (user wins)
+			if (matchInterval) {
+				clearInterval(matchInterval);
+				matchInterval = null;
+			}
+			inMatch = false;
+			// stop recording preview when match ends
+			stopRecordingPreview();
+			// compute minutes passed (round to nearest minute)
+			const mins = Math.round(matchElapsed / 60);
+			if (mins <= 0) {
+				// nothing awarded
+				matchStatusEl.textContent = 'No XP awarded (less than 1 minute).';
+			} else {
+				try {
+					if (userStillReading) {
+						// user wins: award minutes^2 (server-side)
+						const { data, error } = await sb.rpc('award_xp', { p_minutes: mins, p_mode: 'square' });
+						if (error) throw error;
+						const awarded = Array.isArray(data) ? data[0] : data;
+						matchStatusEl.textContent = `You won! Awarded ${awarded ?? 0} XP.`;
+					} else {
+						// user lost: flat minutes (server-side flat)
+						const { data, error } = await sb.rpc('award_xp', { p_minutes: mins, p_mode: 'flat' });
+						if (error) throw error;
+						const awarded = Array.isArray(data) ? data[0] : data;
+						matchStatusEl.textContent = `You lost. Awarded ${awarded ?? 0} XP.`;
+					}
+					if (typeof updateUserUI === 'function') updateUserUI();
+				} catch (err) {
+					console.error('Failed to award XP:', err);
+					matchStatusEl.textContent = 'Network error: XP not awarded.';
+				}
+			}
+			// disable action button briefly and hide match area after short delay
+			if (findBtn) findBtn.disabled = true;
+			setTimeout(() => {
+				hideMatchArea();
+				if (findBtn) {
+					findBtn.disabled = false;
+					findBtn.textContent = 'Find Opponent';
+					findBtn.classList.remove('btn-danger');
+					findBtn.classList.add('btn-warning');
+				}
+				// reset circle
+				const circle = document.getElementById('matchCircle');
+				if (circle) {
+					const r = parseFloat(circle.getAttribute('r')) || 110;
+					const dash = 2 * Math.PI * r;
+					circle.setAttribute('stroke-dasharray', dash);
+					circle.setAttribute('stroke-dashoffset', dash);
+				}
+			}, 2000);
+		}
+
 	</script>
 </body>
 </html>
