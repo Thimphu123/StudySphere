@@ -398,7 +398,7 @@
 			// Bot chooses a random stop between 15 and 60 minutes
 			const botMinutes = 15 + Math.floor(Math.random() * 46); // 15..60
 			botStopAt = botMinutes * 60;
-			matchStatusEl.textContent = `Bot will stop after ${botMinutes} minutes (secret). Good luck!`;
+			matchStatusEl.textContent = `Match started. Good luck!`;
 			showMatchArea();
 			// start local timer
 			matchTimerEl.textContent = formatTimeSimple(matchElapsed);
