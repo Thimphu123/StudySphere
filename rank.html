@@ -255,6 +255,35 @@
 		let matchElapsed = 0;
 		let botStopAt = null; // seconds
 		let inMatch = false;
+		// fast looping circle progress (independent of bot time)
+		let progressAnimId = null;
+		const PROGRESS_CYCLE_MS = 2500; // one full circle every 2.5s
+
+		function startCircleProgressLoop() {
+			const circle = document.getElementById('matchCircle');
+			if (!circle) return;
+			const r = parseFloat(circle.getAttribute('r')) || 110;
+			const dash = 2 * Math.PI * r;
+			circle.setAttribute('stroke-dasharray', dash);
+			let startTs = null;
+			function step(ts) {
+				if (!startTs) startTs = ts;
+				const elapsedMs = ts - startTs;
+				const cycleMs = PROGRESS_CYCLE_MS;
+				const phase = (elapsedMs % cycleMs) / cycleMs; // 0..1 looping
+				const offset = Math.max(0, dash - dash * phase);
+				circle.setAttribute('stroke-dashoffset', offset);
+				progressAnimId = requestAnimationFrame(step);
+			}
+			progressAnimId = requestAnimationFrame(step);
+		}
+
+		function stopCircleProgressLoop() {
+			if (progressAnimId) {
+				cancelAnimationFrame(progressAnimId);
+				progressAnimId = null;
+			}
+		}
 
 		// Reuse RPC helper pattern from practice page
 		async function addXpViaRpc(minutes, flat = false) {
@@ -405,15 +434,6 @@
 			matchInterval = setInterval(() => {
 				matchElapsed++;
 				matchTimerEl.textContent = formatTimeSimple(matchElapsed);
-				// animate circle progress: percent elapsed of botStopAt (cap at 1)
-				const circle = document.getElementById('matchCircle');
-				if (circle && botStopAt) {
-					const r = parseFloat(circle.getAttribute('r')) || 110;
-					const dash = 2 * Math.PI * r;
-					const percent = Math.min(matchElapsed / botStopAt, 1);
-					circle.setAttribute('stroke-dasharray', dash);
-					circle.setAttribute('stroke-dashoffset', Math.max(0, dash - dash * percent));
-				}
 				// Bot stops when reaches its time
 				if (matchElapsed >= botStopAt) {
 					// bot stopped first -> user wins
@@ -422,6 +442,8 @@
 			}, 1000);
 			// start recording preview
 			startRecordingPreview();
+			// start fast looping circle progress independent of bot timer
+			startCircleProgressLoop();
 		}
 
 		async function endMatch(userStillReading, modalInstance) {
@@ -433,6 +455,8 @@
 			inMatch = false;
 			// stop recording preview when match ends
 			stopRecordingPreview();
+			// stop fast looping circle animation
+			stopCircleProgressLoop();
 			// compute minutes passed (round to nearest minute)
 			const mins = Math.round(matchElapsed / 60);
 			if (mins <= 0) {
