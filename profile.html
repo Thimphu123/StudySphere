@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Profile</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column min-vh-100 bg-dark" data-bs-theme="dark">
+
+	<header class="p-3 sticky-top bg-dark">
+		<div class="container">
+			<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+				<a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+					<svg class="bi me-2" width="40" height="32" role="img" aria-label="Logo"></svg>
+				</a>
+				<ul class="nav nav-pills col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+					<li><a href="/" class="nav-link px-3 text-white">Home</a></li>
+					<li><a href="/leaderboard.html" class="nav-link px-3 text-white">Leaderboard</a></li>
+					<li><a href="/practice.html" class="nav-link px-3 text-white">Practice</a></li>
+					<li><a href="/rank.html" class="nav-link px-3 text-white">Rank</a></li>
+					<li><a href="/about.html" class="nav-link px-3 text-white">About</a></li>
+				</ul>
+				<div class="text-end">
+					<a href="/login.html" type="button" class="btn btn-outline-light me-2">Login</a>
+					<a href="/signup.html" type="button" class="btn btn-warning">Sign-up</a>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<div class="cover-container d-flex w-100 min-vh-100 p-3 mx-auto flex-column">
+		<main class="py-4 my-3">
+			<div class="container" style="max-width: 880px;">
+				<div class="card border border-secondary-subtle" style="background:#0f0f0f;">
+					<div class="card-body p-4 p-md-5">
+						<div class="d-flex flex-column flex-md-row align-items-center align-items-md-start gap-4">
+							<div class="position-relative d-inline-block">
+								<img id="avatarImage" src="https://ui-avatars.com/api/?name=&background=ffc107&color=222&bold=true" alt="avatar" width="160" height="160" class="rounded-circle border border-warning" style="object-fit:cover;">
+								<button id="changePhotoBtn" class="btn btn-sm btn-dark text-white rounded-circle position-absolute" style="top:8px; right:8px; width:36px; height:36px; display:flex; align-items:center; justify-content:center;" aria-label="Change photo">
+									<i class="bi bi-pencil-fill"></i>
+								</button>
+								<input id="avatarFile" type="file" accept="image/*" class="d-none">
+							</div>
+							<div class="flex-fill w-100">
+								<div class="d-flex align-items-center gap-3 mb-3">
+									<h1 id="displayName" class="h3 mb-0"></h1>
+									<span id="displayXpPill" class="badge rounded-pill bg-warning text-dark" style="font-size:1rem;"></span>
+								</div>
+								<div class="mt-4">
+									<label class="form-label text-body-secondary" for="statusField">Status</label>
+									<textarea id="statusField" class="form-control" rows="3" placeholder="Say something about you..."></textarea>
+									<div class="d-flex align-items-center gap-2 mt-3">
+										<button id="saveStatusBtn" class="btn btn-warning">Save status</button>
+										<span id="statusMsg" class="small"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+	</div>
+
+	<div class="container">
+		<footer class="py-3 my-4">
+			<ul class="nav justify-content-center border-bottom pb-3 mb-3">
+				<li class="nav-item"><a href="/" class="nav-link px-2 text-body-secondary">Home</a></li>
+				<li class="nav-item"><a href="/leaderboard.html" class="nav-link px-2 text-body-secondary">Leaderboard</a></li>
+				<li class="nav-item"><a href="/practice.html" class="nav-link px-2 text-body-secondary">Practice</a></li>
+				<li class="nav-item"><a href="/rank.html" class="nav-link px-2 text-body-secondary">Rank</a></li>
+				<li class="nav-item"><a href="/about.html" class="nav-link px-2 text-body-secondary">About</a></li>
+			</ul>
+			<p class="text-center text-body-secondary">© 2025 StudySphere</p>
+		</footer>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+	<script>
+		// Supabase init (same project as index.html)
+		const SUPABASE_URL = 'https://mtrdbguzixngcvzcxwlz.supabase.co';
+		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10cmRiZ3V6aXhuZ2N2emN4d2x6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxMzY1NTIsImV4cCI6MjA3MjcxMjU1Mn0.Bcedj4oZbqY0sWzTXULtPeiPlNDdy2RnVef_u68tHVU';
+		const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+		async function getUser() {
+			let user = null;
+			try {
+				const session = JSON.parse(localStorage.getItem('sb-session'));
+				if (session && session.user) user = session.user;
+			} catch {}
+			if (!user) {
+				const { data } = await sb.auth.getUser();
+				user = data && data.user;
+			}
+			return user;
+		}
+
+		async function getUserXP(userId) {
+			if (!userId) return 0;
+			const { data, error } = await sb.from('profiles').select('xp').eq('id', userId).single();
+			if (error) return 0;
+			return data?.xp ?? 0;
+		}
+
+		async function getUserStatus(userId) {
+			if (!userId) return '';
+			const { data, error } = await sb.from('profiles').select('status').eq('id', userId).single();
+			if (error) return '';
+			return data?.status ?? '';
+		}
+
+		// Update header UI
+		async function updateUserUI() {
+			const user = await getUser();
+			const userDiv = document.querySelector('.text-end');
+			if (!userDiv) return;
+			if (user) {
+				const name = user.user_metadata?.name || user.email || 'User';
+				const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ffc107&color=222&bold=true`;
+				let xp = await getUserXP(user.id);
+				userDiv.innerHTML = `
+					<span class="badge rounded-pill bg-warning text-dark me-3 align-middle" style="font-size:1rem;vertical-align:middle;">${xp} XP</span>
+					<div class="dropdown d-inline-block align-middle">
+					  <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+						<img src="${avatar}" alt="avatar" width="32" height="32" class="rounded-circle me-2 border border-warning">
+						<span class="fw-semibold">${name}</span>
+					  </a>
+					  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="userDropdown" style="background: #151515">
+						<li><a class="dropdown-item" href="/profile.html">Profile</a></li>
+						<li><hr class="dropdown-divider"></li>
+						<li><a class="dropdown-item" href="#" id="logoutBtn">Log out</a></li>
+					  </ul>
+					</div>
+				`;
+				setTimeout(() => {
+					const logoutBtn = document.getElementById('logoutBtn');
+					if (logoutBtn) {
+						logoutBtn.onclick = async function(e) {
+							e.preventDefault();
+							await sb.auth.signOut();
+							localStorage.removeItem('sb-session');
+							window.location.href = '/';
+						};
+					}
+				}, 0);
+			} else {
+				userDiv.innerHTML = `
+					<a href="/login.html" type="button" class="btn btn-outline-light me-2">Login</a>
+					<a href="/signup.html" type="button" class="btn btn-warning">Sign-up</a>
+				`;
+			}
+		}
+
+		// Page-specific: load and enforce auth
+		async function loadProfile() {
+			const user = await getUser();
+			if (!user) {
+				window.location.href = '/login.html';
+				return;
+			}
+			const name = user.user_metadata?.name || user.email || 'User';
+			const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ffc107&color=222&bold=true`;
+			const [xp, status] = await Promise.all([getUserXP(user.id), getUserStatus(user.id)]);
+			document.getElementById('displayName').textContent = name;
+			document.getElementById('displayXpPill').textContent = `${xp} XP`;
+			document.getElementById('avatarImage').src = avatar;
+			const statusField = document.getElementById('statusField');
+			if (statusField) statusField.value = status || '';
+		}
+
+		function setStatus(message, type = 'info') {
+			const el = document.getElementById('statusMsg');
+			if (!el) return;
+			const color = type === 'error' ? '#f66' : (type === 'success' ? '#6f6' : '#aaa');
+			el.textContent = message;
+			el.style.color = color;
+		}
+
+		async function uploadAvatarAndSave(urlOrFile) {
+			const user = await getUser();
+			if (!user) return;
+
+			try {
+				let publicUrl = null;
+				if (urlOrFile instanceof File) {
+					setStatus('Uploading image...', 'info');
+					const fileExt = urlOrFile.name.split('.').pop()?.toLowerCase() || 'jpg';
+					const filePath = `${user.id}/${Date.now()}.${fileExt}`;
+					const { error: upErr } = await sb.storage.from('avatars').upload(filePath, urlOrFile, { upsert: true, contentType: urlOrFile.type });
+					if (upErr) throw upErr;
+					const { data } = sb.storage.from('avatars').getPublicUrl(filePath);
+					publicUrl = data?.publicUrl;
+				} else if (typeof urlOrFile === 'string' && urlOrFile) {
+					publicUrl = urlOrFile;
+				}
+
+				if (!publicUrl) throw new Error('No image URL produced.');
+
+				// Update user metadata with new avatar URL
+				const { error: updErr } = await sb.auth.updateUser({ data: { avatar_url: publicUrl } });
+				if (updErr) throw updErr;
+
+				// Reflect immediately in UI
+				document.getElementById('avatarImage').src = publicUrl;
+				setStatus('Profile photo updated.', 'success');
+				updateUserUI();
+				loadProfile();
+			} catch (err) {
+				console.warn('Avatar update failed', err);
+				setStatus('Could not update photo automatically. You can paste an image URL instead.', 'error');
+			}
+		}
+
+		async function saveStatus() {
+			const user = await getUser();
+			if (!user) return;
+			const statusText = (document.getElementById('statusField')?.value || '').trim();
+			try {
+				setStatus('Saving status...', 'info');
+				const { error } = await sb.from('profiles').upsert({ id: user.id, status: statusText });
+				if (error) throw error;
+				setStatus('Status saved.', 'success');
+				updateUserUI();
+				loadProfile();
+			} catch (e) {
+				console.warn('Save status failed', e);
+				setStatus('Failed to save status.', 'error');
+			}
+		}
+
+		// Event bindings
+		document.addEventListener('DOMContentLoaded', () => {
+			updateUserUI();
+			loadProfile();
+
+			const changeBtn = document.getElementById('changePhotoBtn');
+			const fileInput = document.getElementById('avatarFile');
+			changeBtn?.addEventListener('click', () => fileInput?.click());
+			fileInput?.addEventListener('change', async (e) => {
+				const file = e.target.files && e.target.files[0];
+				if (!file) return;
+				await uploadAvatarAndSave(file);
+			});
+
+			// Fallback: allow paste of URL to update avatar if upload/storage fails
+			document.getElementById('avatarImage')?.addEventListener('dblclick', async () => {
+				const url = prompt('Paste an image URL to use as your profile photo:');
+				if (!url) return;
+				await uploadAvatarAndSave(url.trim());
+			});
+
+			document.getElementById('saveStatusBtn')?.addEventListener('click', async () => {
+				await saveStatus();
+			});
+		});
+	</script>
+</body>
+</html>
+
+
